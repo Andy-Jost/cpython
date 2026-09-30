@@ -305,6 +305,7 @@ class GrammarTests(unittest.TestCase):
             with self.subTest(src=src):
                 check_syntax_error(self, src, "invalid syntax")
 
+    @support.skip_wasi_stack_overflow()
     def test_nested_depth(self):
         # A '?' chain is right-recursive and costs one parser frame per
         # operator, like '**'.
@@ -319,6 +320,15 @@ class GrammarTests(unittest.TestCase):
         compile("def f():\n    return " + "[" * 199 + "]" * 199, "", "exec")
         with self.assertRaisesRegex(MemoryError, "too complex"):
             compile("1 ? " * 6300 + "1", "", "eval")
+
+    @unittest.skipUnless(sys.platform == "wasi", "WASI parser stack limits")
+    def test_nested_depth_wasi(self):
+        # WASI caps MAXSTACK at 4000 (1000 with Py_DEBUG) instead of 6000.
+        # The deepest list nesting stock CPython accepts there is
+        # floor((MAXSTACK - 26) / 29) levels; the choice frame per level
+        # must not push it over the fork's scaled limit.
+        depth = 33 if support.Py_DEBUG else 137
+        compile("[" * depth + "]" * depth, "", "eval")
 
     def test_ast_operator_class(self):
         self.assertIsSubclass(ast.Choice, ast.operator)

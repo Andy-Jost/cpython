@@ -757,6 +757,11 @@ validate_stmt(stmt_ty stmt)
             validate_expr(stmt->v.Assign.value, Load);
         break;
     case AugAssign_kind:
+        if (stmt->v.AugAssign.op == Choice) {
+            PyErr_SetString(PyExc_ValueError,
+                            "choice operator cannot be used in augmented assignment");
+            return 0;
+        }
         ret = validate_expr(stmt->v.AugAssign.target, Store) &&
             validate_expr(stmt->v.AugAssign.value, Load);
         break;

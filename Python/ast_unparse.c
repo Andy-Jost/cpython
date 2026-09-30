@@ -118,6 +118,7 @@ append_repr(PyUnicodeWriter *writer, PyObject *obj)
 enum {
     PR_TUPLE,
     PR_TEST,            /* 'if'-'else', 'lambda' */
+    PR_CHOICE,          /* '?' */
     PR_OR,              /* 'or' */
     PR_AND,             /* 'and' */
     PR_NOT,             /* 'not' */
@@ -179,6 +180,7 @@ append_ast_binop(PyUnicodeWriter *writer, expr_ty e, int level)
     case BitAnd: op = " & "; pr = PR_BAND; break;
     case FloorDiv: op = " // "; pr = PR_TERM; break;
     case Pow: op = " ** "; pr = PR_POWER; rassoc = true; break;
+    case Choice: op = " ? "; pr = PR_CHOICE; rassoc = true; break;
     default:
         PyErr_SetString(PyExc_SystemError,
                         "unknown binary operator");
@@ -410,12 +412,13 @@ append_ast_comprehension(PyUnicodeWriter *writer, comprehension_ty gen)
     APPEND_STR(gen->is_async ? " async for " : " for ");
     APPEND_EXPR(gen->target, PR_TUPLE);
     APPEND_STR(" in ");
-    APPEND_EXPR(gen->iter, PR_TEST + 1);
+    /* for_if_clause takes a disjunction: parenthesize '?' and anything looser. */
+    APPEND_EXPR(gen->iter, PR_CHOICE + 1);
 
     if_count = asdl_seq_LEN(gen->ifs);
     for (i = 0; i < if_count; i++) {
         APPEND_STR(" if ");
-        APPEND_EXPR((expr_ty)asdl_seq_GET(gen->ifs, i), PR_TEST + 1);
+        APPEND_EXPR((expr_ty)asdl_seq_GET(gen->ifs, i), PR_CHOICE + 1);
     }
     return 0;
 }

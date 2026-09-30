@@ -966,6 +966,7 @@ class AST_Tests(unittest.TestCase):
             TUPLE = enum.auto()           # <expr1>, <expr2>
             YIELD = enum.auto()           # 'yield', 'yield from'
             TEST = enum.auto()            # 'if'-'else', 'lambda'
+            CHOICE = enum.auto()          # '?'
             OR = enum.auto()              # 'or'
             AND = enum.auto()             # 'and'
             NOT = enum.auto()             # 'not'
@@ -2126,6 +2127,9 @@ class ASTValidatorTests(unittest.TestCase):
         aug = ast.AugAssign(ast.Name("x", ast.Store()), ast.Add(),
                             ast.Name("y", ast.Store()))
         self.stmt(aug, "must have Load context")
+        aug = ast.AugAssign(ast.Name("x", ast.Store()), ast.Choice(),
+                            ast.Name("y", ast.Load()))
+        self.stmt(aug, "choice operator cannot be used in augmented assignment")
 
     def test_for(self):
         x = ast.Name("x", ast.Store())

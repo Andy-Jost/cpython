@@ -18,6 +18,7 @@ class _Precedence:
     TUPLE = auto()           # <expr1>, <expr2>
     YIELD = auto()           # 'yield', 'yield from'
     TEST = auto()            # 'if'-'else', 'lambda'
+    CHOICE = auto()          # '?'
     OR = auto()              # 'or'
     AND = auto()             # 'and'
     NOT = auto()             # 'not'
@@ -752,7 +753,7 @@ class Unparser(NodeVisitor):
         self.set_precedence(_Precedence.TUPLE, node.target)
         self.traverse(node.target)
         self.write(" in ")
-        self.set_precedence(_Precedence.TEST.next(), node.iter, *node.ifs)
+        self.set_precedence(_Precedence.CHOICE.next(), node.iter, *node.ifs)
         self.traverse(node.iter)
         for if_clause in node.ifs:
             self.write(" if ")
@@ -841,6 +842,7 @@ class Unparser(NodeVisitor):
         "BitAnd": "&",
         "FloorDiv": "//",
         "Pow": "**",
+        "Choice": "?",
     }
 
     binop_precedence = {
@@ -857,9 +859,10 @@ class Unparser(NodeVisitor):
         "&": _Precedence.BAND,
         "//": _Precedence.TERM,
         "**": _Precedence.POWER,
+        "?": _Precedence.CHOICE,
     }
 
-    binop_rassoc = frozenset(("**",))
+    binop_rassoc = frozenset(("**", "?"))
     def visit_BinOp(self, node):
         operator = self.binop[node.op.__class__.__name__]
         operator_precedence = self.binop_precedence[operator]

@@ -541,6 +541,7 @@ class _Stringifier:
     __and__ = _make_binop(ast.BitAnd())
     __floordiv__ = _make_binop(ast.FloorDiv())
     __pow__ = _make_binop(ast.Pow())
+    __choice__ = _make_binop(ast.Choice())
 
     del _make_binop
 
@@ -566,6 +567,7 @@ class _Stringifier:
     __rand__ = _make_rbinop(ast.BitAnd())
     __rfloordiv__ = _make_rbinop(ast.FloorDiv())
     __rpow__ = _make_rbinop(ast.Pow())
+    __rchoice__ = _make_rbinop(ast.Choice())
 
     del _make_rbinop
 

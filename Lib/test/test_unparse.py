@@ -1014,7 +1014,8 @@ class DirectoryTestCase(ASTTestCase):
     run_always_files = {"test_grammar.py", "test_syntax.py", "test_compile.py",
                         "test_ast.py", "test_asdl_parser.py", "test_fstring.py",
                         "test_patma.py", "test_type_alias.py", "test_type_params.py",
-                        "test_tokenize.py", "test_tstring.py"}
+                        "test_tokenize.py", "test_tstring.py",
+                        "test_choice.py"}
 
     _files_to_test = None
 

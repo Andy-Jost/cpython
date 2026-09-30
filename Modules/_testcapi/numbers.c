@@ -28,6 +28,7 @@ BINARYFUNC(Add, add)
 BINARYFUNC(Subtract, subtract)
 BINARYFUNC(Multiply, multiply)
 BINARYFUNC(MatrixMultiply, matrixmultiply)
+BINARYFUNC(Choice, choice)
 BINARYFUNC(FloorDivide, floordivide)
 BINARYFUNC(TrueDivide, truedivide)
 BINARYFUNC(Remainder, remainder)
@@ -131,6 +132,7 @@ static PyMethodDef test_methods[] = {
     {"number_subtract", number_subtract, METH_VARARGS},
     {"number_multiply", number_multiply, METH_VARARGS},
     {"number_matrixmultiply", number_matrixmultiply, METH_VARARGS},
+    {"number_choice", number_choice, METH_VARARGS},
     {"number_floordivide", number_floordivide, METH_VARARGS},
     {"number_truedivide", number_truedivide, METH_VARARGS},
     {"number_remainder", number_remainder, METH_VARARGS},

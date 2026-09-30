@@ -2131,6 +2131,11 @@ class ASTValidatorTests(unittest.TestCase):
                             ast.Name("y", ast.Load()))
         self.stmt(aug, "choice operator cannot be used in augmented assignment")
 
+    def test_binop_choice(self):
+        # The validator and the compiler accept a hand-built BinOp(Choice).
+        self.expr(ast.BinOp(ast.Name("x", ast.Load()), ast.Choice(),
+                            ast.Name("y", ast.Load())))
+
     def test_for(self):
         x = ast.Name("x", ast.Store())
         y = ast.Name("y", ast.Load())

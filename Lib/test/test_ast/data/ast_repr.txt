@@ -142,6 +142,7 @@ Module(body=[Expr(value=BinOp(left=Name(...), op=Div(...), right=Name(...)))], t
 Module(body=[Expr(value=BinOp(left=Name(...), op=MatMult(...), right=Name(...)))], type_ignores=[])
 Module(body=[Expr(value=BinOp(left=Name(...), op=FloorDiv(...), right=Name(...)))], type_ignores=[])
 Module(body=[Expr(value=BinOp(left=Name(...), op=Pow(...), right=Name(...)))], type_ignores=[])
+Module(body=[Expr(value=BinOp(left=Name(...), op=Choice(...), right=Name(...)))], type_ignores=[])
 Module(body=[Expr(value=BinOp(left=Name(...), op=Mod(...), right=Name(...)))], type_ignores=[])
 Module(body=[Expr(value=BinOp(left=Name(...), op=RShift(...), right=Name(...)))], type_ignores=[])
 Module(body=[Expr(value=BinOp(left=Name(...), op=LShift(...), right=Name(...)))], type_ignores=[])

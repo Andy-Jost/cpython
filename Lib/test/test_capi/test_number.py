@@ -160,6 +160,55 @@ class CAPITest(unittest.TestCase):
             # CRASHES func(NULL, object())
             # CRASHES func(object(), NULL)
 
+    def test_choice(self):
+        # PyNumber_Choice()
+        import types
+        choice = _testcapi.number_choice
+
+        # Generic objects do not raise: the fallback is a node.
+        node = choice(1, 2)
+        self.assertIs(type(node), types.ChoiceType)
+        self.assertEqual(node.lhs, 1)
+        self.assertEqual(node.rhs, 2)
+        obj = object()
+        node = choice(obj, 3.14)
+        self.assertIs(type(node), types.ChoiceType)
+        self.assertIs(node.lhs, obj)
+        self.assertEqual(node.rhs, 3.14)
+
+        # __choice__ is called with the right operand and its result
+        # is returned as is.
+        class WithChoice:
+            def __choice__(self, other):
+                return ("choice", other)
+        self.assertEqual(choice(WithChoice(), 2), ("choice", 2))
+        class WithRChoice:
+            def __rchoice__(self, other):
+                return ("rchoice", other)
+        self.assertEqual(choice(1, WithRChoice()), ("rchoice", 1))
+
+        # NotImplemented from both sides yields a node.
+        class Left:
+            def __choice__(self, other):
+                return NotImplemented
+        class Right:
+            def __rchoice__(self, other):
+                return NotImplemented
+        left, right = Left(), Right()
+        node = choice(left, right)
+        self.assertIs(type(node), types.ChoiceType)
+        self.assertIs(node.lhs, left)
+        self.assertIs(node.rhs, right)
+
+        # Exceptions propagate.
+        class Raises:
+            def __choice__(self, other):
+                raise SomeError
+        self.assertRaises(SomeError, choice, Raises(), 1)
+
+        # CRASHES choice(NULL, object())
+        # CRASHES choice(object(), NULL)
+
     @unittest.skipIf(ndarray is None, "needs _testbuffer")
     def test_misc_add(self):
         # PyNumber_Add(), PyNumber_InPlaceAdd()

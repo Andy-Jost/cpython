@@ -1229,6 +1229,29 @@ class PycMagicTests(unittest.TestCase):
             rc, out, err = script_helper.assert_python_ok(nosuffix)
             self.assertEqual(out.strip(), b"from pyc ChoiceType(1, 2)")
 
+    def test_compileall_keeps_stock_pyc(self):
+        import compileall
+        with import_helper.ready_to_import(source="x = 1\n") as (name, path):
+            timestamp = py_compile.PycInvalidationMode.TIMESTAMP
+            cached = py_compile.compile(path, doraise=True,
+                                        invalidation_mode=timestamp)
+            with open(cached, "rb") as f:
+                data = f.read()
+            stock = _bootstrap_external._STOCK_MAGIC_NUMBER + data[4:]
+            with open(cached, "wb") as f:
+                f.write(stock)
+            # Without force, a pyc written by stock CPython is up to date:
+            # compileall must neither rewrite it nor fail on it.
+            self.assertTrue(compileall.compile_file(path, quiet=2))
+            with open(cached, "rb") as f:
+                self.assertEqual(f.read(), stock)
+            # An unknown magic number is still stale and gets recompiled.
+            with open(cached, "wb") as f:
+                f.write(b"0000" + data[4:])
+            self.assertTrue(compileall.compile_file(path, quiet=2))
+            with open(cached, "rb") as f:
+                self.assertEqual(f.read()[:4], importlib.util.MAGIC_NUMBER)
+
 
 if __name__ == "__main__":
     unittest.main()

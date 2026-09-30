@@ -228,12 +228,15 @@ def compile_file(fullname, ddir=None, force=False, rx=None, quiet=0,
             if not force:
                 try:
                     mtime = int(os.stat(fullname).st_mtime)
-                    expect = struct.pack('<4sLL', importlib.util.MAGIC_NUMBER,
-                                         0, mtime & 0xFFFF_FFFF)
+                    expect = struct.pack('<LL', 0, mtime & 0xFFFF_FFFF)
+                    # Choice fork: a pyc written by stock CPython is up to
+                    # date as well; the importer loads either magic number.
+                    magics = (importlib.util.MAGIC_NUMBER,
+                              importlib._bootstrap_external._STOCK_MAGIC_NUMBER)
                     for cfile in opt_cfiles.values():
                         with open(cfile, 'rb') as chandle:
                             actual = chandle.read(12)
-                        if expect != actual:
+                        if actual[:4] not in magics or actual[4:] != expect:
                             break
                     else:
                         return success

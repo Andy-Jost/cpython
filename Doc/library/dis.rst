@@ -729,6 +729,8 @@ not have to be) the original ``STACK[-2]``.
    .. versionadded:: 3.11
    .. versionchanged:: 3.14
       With oparg :``NB_SUBSCR``, implements binary subscript (replaces opcode ``BINARY_SUBSCR``)
+   .. versionchanged:: 3.14 (choice fork)
+      With oparg ``NB_CHOICE``, implements the choice operator ``?``.
 
 
 .. opcode:: STORE_SUBSCR

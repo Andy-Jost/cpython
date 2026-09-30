@@ -65,8 +65,7 @@ with links to sections that contain more information.
      - * :ref:`Numeric literal <numbers>`
        * :ref:`Operator <operators>`
 
-   * - * question mark (``?``)
-       * dollar (``$``)
+   * - * dollar (``$``)
        *
          .. (the following uses zero-width space characters to render
          .. a literal backquote)
@@ -1561,7 +1560,7 @@ is also available in the :mod:`!token` module documentation.
    enclosing_delimiter:   "("  | ")"  | "["  | "]"   | "{"   | "}"
    other_delimiter:       ","  | ":"  | "!"  | ";"   | "="   | "->"
    arithmetic_operator:   "+"  | "-"  | "**" | "*"   | "//"  | "/"   | "%"
-   other_op:              "."  | "@"
+   other_op:              "."  | "@"  | "?"
 
 .. note::
 

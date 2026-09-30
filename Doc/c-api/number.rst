@@ -41,6 +41,18 @@ Number Protocol
    .. versionadded:: 3.5
 
 
+.. c:function:: PyObject* PyNumber_Choice(PyObject *o1, PyObject *o2)
+
+   Returns the result of the choice operator on *o1* and *o2*, or ``NULL`` on
+   failure.  This is the equivalent of the Python expression ``o1 ? o2``.  The
+   call dispatches to :meth:`~object.__choice__` and :meth:`~object.__rchoice__`
+   with the reflected-operand rules of the other binary operators; when neither
+   claims the operation the result is a new :class:`types.ChoiceType`.  Not part
+   of the limited API.
+
+   .. versionadded:: 3.14 (choice fork)
+
+
 .. c:function:: PyObject* PyNumber_FloorDivide(PyObject *o1, PyObject *o2)
 
    Return the floor of *o1* divided by *o2*, or ``NULL`` on failure.  This is

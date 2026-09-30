@@ -2166,6 +2166,25 @@ including in ``if`` and ``while`` statements.
    See :pep:`572` for more details about assignment expressions.
 
 
+.. _choice:
+
+Choice expression
+=================
+
+.. index:: pair: choice; expression
+
+.. productionlist:: python-grammar
+   choice: `or_test` "?" `choice` | `or_test`
+
+The choice operator ``?`` evaluates both operands, then calls
+:meth:`!__choice__` on the left operand's type and :meth:`!__rchoice__` on
+the right operand's type, following the rules for reflected binary operators.
+When neither method claims the operation, the result is a
+:class:`types.ChoiceType` node holding both operands. It is right-associative:
+``a ? b ? c`` is ``a ? (b ? c)``. It binds less tightly than :keyword:`or` and
+more tightly than the conditional expression and :keyword:`lambda`.
+
+
 .. _if_expr:
 
 Conditional expressions
@@ -2178,7 +2197,7 @@ Conditional expressions
    single: else; conditional expression
 
 .. productionlist:: python-grammar
-   conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
+   conditional_expression: `choice` ["if" `choice` "else" `expression`]
    expression: `conditional_expression` | `lambda_expr`
 
 A conditional expression (sometimes called a "ternary operator") is an
@@ -2303,7 +2322,8 @@ The following table summarizes the operator precedence in Python, from highest
 precedence (most binding) to lowest precedence (least binding).  Operators in
 the same box have the same precedence.  Unless the syntax is explicitly given,
 operators are binary.  Operators in the same box group left to right (except for
-exponentiation and conditional expressions, which group from right to left).
+exponentiation, choice expressions, and conditional expressions, which group
+from right to left).
 
 Note that comparisons, membership tests, and identity tests, all have the same
 precedence and have a left-to-right chaining feature as described in the
@@ -2351,6 +2371,8 @@ precedence and have a left-to-right chaining feature as described in the
 | :keyword:`and`                                | Boolean AND                         |
 +-----------------------------------------------+-------------------------------------+
 | :keyword:`or`                                 | Boolean OR                          |
++-----------------------------------------------+-------------------------------------+
+| ``?``                                         | Choice expression                   |
 +-----------------------------------------------+-------------------------------------+
 | :keyword:`if <if_expr>` -- :keyword:`!else`   | Conditional expression              |
 +-----------------------------------------------+-------------------------------------+

@@ -602,6 +602,7 @@ Expressions
            BitXor
            BitAnd
            MatMult
+           Choice
 
    Binary operator tokens.
 

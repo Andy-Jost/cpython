@@ -1537,6 +1537,10 @@ PyNumber_AsSsize_t:PyObject*:exc:0:
 PyNumber_Check:int:::
 PyNumber_Check:PyObject*:o:0:
 
+PyNumber_Choice:PyObject*::+1:
+PyNumber_Choice:PyObject*:o1:0:
+PyNumber_Choice:PyObject*:o2:0:
+
 PyNumber_Divmod:PyObject*::+1:
 PyNumber_Divmod:PyObject*:o1:0:
 PyNumber_Divmod:PyObject*:o2:0:

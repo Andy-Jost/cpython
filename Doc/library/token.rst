@@ -263,3 +263,6 @@ The following non-token constants are provided:
 .. versionchanged:: 3.13
    Removed :data:`!AWAIT` and :data:`!ASYNC` tokens again.
 
+.. versionchanged:: 3.14 (choice fork)
+   Added :data:`QUESTION`.
+

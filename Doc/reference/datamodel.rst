@@ -3371,6 +3371,7 @@ left undefined.
             object.__sub__(self, other)
             object.__mul__(self, other)
             object.__matmul__(self, other)
+            object.__choice__(self, other)
             object.__truediv__(self, other)
             object.__floordiv__(self, other)
             object.__mod__(self, other)
@@ -3406,6 +3407,7 @@ left undefined.
             object.__rsub__(self, other)
             object.__rmul__(self, other)
             object.__rmatmul__(self, other)
+            object.__rchoice__(self, other)
             object.__rtruediv__(self, other)
             object.__rfloordiv__(self, other)
             object.__rmod__(self, other)
@@ -3431,6 +3433,14 @@ left undefined.
    an instance of a class that has an :meth:`__rsub__` method, ``type(y).__rsub__(y, x)``
    is called if ``type(x).__sub__(x, y)`` returns :data:`NotImplemented` or ``type(y)``
    is a subclass of ``type(x)``. [#]_
+
+   For the choice operator ``?`` the chain ends differently: when neither
+   ``__choice__`` nor ``__rchoice__`` claims the operation, the result is a
+   :class:`types.ChoiceType` node holding both operands, not :exc:`TypeError`.
+   Returning :data:`NotImplemented` still means "defer". Types without a
+   ``__choice__`` method, including proxies such as :func:`weakref.proxy` and
+   :class:`unittest.mock.MagicMock`, therefore build a node instead of
+   forwarding the operator.
 
    Note that :meth:`__rpow__` should be defined to accept an optional third
    argument if the three-argument version of the built-in :func:`pow` function

@@ -318,6 +318,13 @@ Standard names are defined for the following types:
 
       This is now an alias for :class:`typing.Union`.
 
+.. class:: ChoiceType(lhs, rhs)
+
+   The type of the node built by the choice operator ``lhs ? rhs`` when
+   neither operand handles it. Instances are immutable, compare and hash by
+   identity, have no truth value, and support ``match`` with the positional
+   pattern ``ChoiceType(lhs, rhs)``.
+
 .. class:: TracebackType(tb_next, tb_frame, tb_lasti, tb_lineno)
 
    The type of traceback objects such as found in ``sys.exception().__traceback__``.

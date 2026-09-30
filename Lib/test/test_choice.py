@@ -269,8 +269,8 @@ class GrammarTests(unittest.TestCase):
         self.assertIsInstance(tree.body[0].body[0].value, ast.BinOp)
 
     def test_syntax_errors(self):
-        for src in ["a ?", "? a", "a ?? b", "a ?= b", "?", "a ? ? b",
-                    "a ? lambda: b"]:
+        for src in ["a ?", "? a", "a ?? b", "a ?= b", "a ?. b", "?",
+                    "a ? ? b", "a ? lambda: b"]:
             with self.subTest(src=src):
                 check_syntax_error(self, src, "invalid syntax")
         # '?' in the left operand of an 'if' and in the first of two
@@ -281,6 +281,11 @@ class GrammarTests(unittest.TestCase):
                 check_syntax_error(self, src)
         check_syntax_error(self, "a ?", "invalid syntax", offset=4)
         check_syntax_error(self, "? a", "invalid syntax", offset=1)
+        # No two-character spellings: the error points at the second
+        # character.
+        check_syntax_error(self, "a ?. b", "invalid syntax", offset=4)
+        check_syntax_error(self, "a ?? b", "invalid syntax", offset=4)
+        check_syntax_error(self, "a ?= b", "invalid syntax", offset=4)
         # A lambda on the right of '?' needs parentheses: lambdef is
         # reachable only from 'expression', and the right operand of '?'
         # is 'choice'. The error points at the lambda keyword.
@@ -333,6 +338,17 @@ class GrammarTests(unittest.TestCase):
         # must not push it over the fork's scaled limit.
         depth = 33 if support.Py_DEBUG else 137
         compile("[" * depth + "]" * depth, "", "eval")
+
+    def test_non_changes(self):
+        # No operator.choice, no __future__ feature, and no
+        # feature_version gate for the operator.
+        import operator
+        import __future__
+        self.assertNotHasAttr(operator, "choice")
+        self.assertNotIn("choice", operator.__all__)
+        self.assertNotIn("choice", __future__.all_feature_names)
+        node = ast.parse("a ? b", mode="eval", feature_version=(3, 8)).body
+        self.assertIsInstance(node.op, ast.Choice)
 
     def test_ast_operator_class(self):
         self.assertIsSubclass(ast.Choice, ast.operator)

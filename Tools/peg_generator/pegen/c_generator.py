@@ -45,7 +45,7 @@ EXTENSION_PREFIX = """\
 #    define MAXSTACK 4000
 #  endif
 #else
-#  define MAXSTACK 6000
+#  define MAXSTACK 6250  /* choice fork: one extra parser frame per bracket level (MAXLEVEL 200) */
 #endif
 
 """

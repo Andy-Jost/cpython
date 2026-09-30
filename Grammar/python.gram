@@ -706,9 +706,13 @@ expressions[expr_ty]:
 expression[expr_ty] (memo):
     | invalid_expression
     | invalid_legacy_expression
-    | a=disjunction 'if' b=disjunction 'else' c=expression { _PyAST_IfExp(b, a, c, EXTRA) }
-    | disjunction
+    | a=choice 'if' b=choice 'else' c=expression { _PyAST_IfExp(b, a, c, EXTRA) }
+    | choice
     | lambdef
+
+choice[expr_ty] (memo):
+    | a=disjunction '?' b=choice { _PyAST_BinOp(a, Choice, b, EXTRA) }
+    | disjunction
 
 yield_expr[expr_ty]:
     | 'yield' 'from' a=expression { _PyAST_YieldFrom(a, EXTRA) }

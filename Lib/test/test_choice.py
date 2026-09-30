@@ -6,6 +6,7 @@ Agent-authored (Claude); not yet human-reviewed.
 import ast
 import copy
 import dis
+import gc
 import importlib
 import importlib.machinery
 import importlib.util
@@ -1032,6 +1033,33 @@ class ChoiceTypeTests(unittest.TestCase):
         del operands, node
         gc_collect()
         self.assertIsNone(ref())
+
+    def test_gc_flag_and_static_registration(self):
+        _testinternalcapi = import_helper.import_module("_testinternalcapi")
+        node = types.ChoiceType(1, 2)
+        self.assertTrue(gc.is_tracked(node))
+        Py_TPFLAGS_HAVE_GC = 1 << 14
+        self.assertTrue(types.ChoiceType.__flags__ & Py_TPFLAGS_HAVE_GC)
+        self.assertIn(types.ChoiceType,
+                      _testinternalcapi.get_static_builtin_types())
+
+    def test_match_args_in_subinterpreter(self):
+        # __match_args__ is written into the per-interpreter type dict
+        # when an interpreter starts, so a fresh one must see it too.
+        interpreters = import_helper.import_module("concurrent.interpreters")
+        interp = interpreters.create()
+        try:
+            interp.exec(
+                "import types\n"
+                "assert types.ChoiceType.__match_args__ == ('lhs', 'rhs')\n"
+                "assert type(1 ? 2) is types.ChoiceType\n"
+                "match 1 ? 2:\n"
+                "    case types.ChoiceType(1, 2):\n"
+                "        pass\n"
+                "    case _:\n"
+                "        raise AssertionError('pattern did not match')\n")
+        finally:
+            interp.close()
 
     def test_no_dunder_choice(self):
         self.assertNotHasAttr(types.ChoiceType, "__choice__")

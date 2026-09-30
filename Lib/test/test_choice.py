@@ -18,13 +18,16 @@ import pickle
 import pkgutil
 import py_compile
 import re
+import runpy
 import sys
 import textwrap
+import time
 import token
 import tokenize
 import types
 import unittest
 import weakref
+import zipfile
 
 import _imp
 import annotationlib
@@ -1349,6 +1352,67 @@ class PycMagicTests(unittest.TestCase):
             with open(pyc, "wb") as f:
                 f.write(_bootstrap_external._STOCK_MAGIC_NUMBER + data[4:])
             self.assertEqual(pydoc.importfile(pyc).VALUE, 1)
+
+    def test_zipimport_accepts_stock_magic(self):
+        # zipimport classifies through _classify_pyc and keys a checked
+        # hash on the token found in the pyc header, so a zip built by
+        # stock CPython loads its bytecode instead of the source.
+        source = "VALUE = 'from source'\n"
+        code = compile("VALUE = 'from pyc'\n", "zmod.py", "exec")
+        date_time = (2024, 1, 2, 3, 4, 6)
+        mtime = int(time.mktime(date_time + (0, 0, -1)))
+        stock = _bootstrap_external._STOCK_MAGIC_NUMBER
+        timestamp = stock + _bootstrap_external._code_to_timestamp_pyc(
+            code, mtime, len(source))[4:]
+        stock_hash = _imp.source_hash(_imp.pyc_magic_number_token_stock,
+                                      source.encode())
+        checked = stock + _bootstrap_external._code_to_hash_pyc(
+            code, stock_hash, checked=True)[4:]
+        fork_hash = _imp.source_hash(_imp.pyc_magic_number_token,
+                                     source.encode())
+        fork_keyed = stock + _bootstrap_external._code_to_hash_pyc(
+            code, fork_hash, checked=True)[4:]
+        unknown = b"0000" + timestamp[4:]
+        # name, pyc bytes, source in the zip, expected VALUE, __file__ end
+        cases = [
+            ("zts", timestamp, True, "from pyc", ".pyc"),
+            ("zch", checked, True, "from pyc", ".pyc"),
+            ("zfk", fork_keyed, True, "from source", ".py"),
+            ("zun", unknown, True, "from source", ".py"),
+            ("zsl", timestamp, False, "from pyc", ".pyc"),
+        ]
+        with os_helper.temp_dir() as tempdir:
+            for name, pyc, with_source, expected, suffix in cases:
+                with self.subTest(name=name):
+                    zpath = os.path.join(tempdir, name + ".zip")
+                    with zipfile.ZipFile(zpath, "w") as archive:
+                        if with_source:
+                            info = zipfile.ZipInfo(name + ".py",
+                                                   date_time=date_time)
+                            archive.writestr(info, source)
+                        archive.writestr(name + ".pyc", pyc)
+                    self.addCleanup(import_helper.unload, name)
+                    with import_helper.DirsOnSysPath(zpath):
+                        importlib.invalidate_caches()
+                        module = importlib.import_module(name)
+                    self.assertEqual(module.VALUE, expected)
+                    self.assertEndsWith(module.__file__, suffix)
+
+    def test_runpy_run_path_stock_magic_pyc(self):
+        # runpy reads the header through pkgutil.read_code.
+        code = compile("VALUE = 'from pyc'\n", "r.py", "exec")
+        data = _bootstrap_external._code_to_timestamp_pyc(code)
+        with os_helper.temp_dir() as tempdir:
+            path = os.path.join(tempdir, "r.pyc")
+            with open(path, "wb") as f:
+                f.write(_bootstrap_external._STOCK_MAGIC_NUMBER + data[4:])
+            self.assertEqual(runpy.run_path(path)["VALUE"], "from pyc")
+            # An unknown magic number is not bytecode; the bytes are then
+            # compiled as source and fail.
+            with open(path, "wb") as f:
+                f.write(b"0000" + data[4:])
+            with self.assertRaises(SyntaxError):
+                runpy.run_path(path)
 
 
 if __name__ == "__main__":

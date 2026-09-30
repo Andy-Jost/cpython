@@ -223,6 +223,7 @@
     <ClInclude Include="..\Include\internal\pycore_cell.h" />
     <ClInclude Include="..\Include\internal\pycore_ceval.h" />
     <ClInclude Include="..\Include\internal\pycore_ceval_state.h" />
+    <ClInclude Include="..\Include\internal\pycore_choiceobject.h" />
     <ClInclude Include="..\Include\internal\pycore_code.h" />
     <ClInclude Include="..\Include\internal\pycore_codecs.h" />
     <ClInclude Include="..\Include\internal\pycore_compile.h" />
@@ -522,6 +523,7 @@
     <ClCompile Include="..\Objects\call.c" />
     <ClCompile Include="..\Objects\capsule.c" />
     <ClCompile Include="..\Objects\cellobject.c" />
+    <ClCompile Include="..\Objects\choiceobject.c" />
     <ClCompile Include="..\Objects\classobject.c" />
     <ClCompile Include="..\Objects\codeobject.c" />
     <ClCompile Include="..\Objects\complexobject.c" />

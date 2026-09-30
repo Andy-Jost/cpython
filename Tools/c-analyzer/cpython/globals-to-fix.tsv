@@ -116,6 +116,7 @@ Python/traceback.c	-	PyTraceBack_Type	-
 ##-----------------------
 ## other exported builtin types
 
+Objects/choiceobject.c	-	_PyChoice_Type	-
 # Not in a .h file:
 Objects/codeobject.c	-	_PyLineIterator	-
 # Not in a .h file:

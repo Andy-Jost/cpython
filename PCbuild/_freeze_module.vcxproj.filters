@@ -79,6 +79,9 @@
     <ClCompile Include="..\Objects\cellobject.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Objects\choiceobject.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Python\ceval.c">
       <Filter>Source Files</Filter>
     </ClCompile>

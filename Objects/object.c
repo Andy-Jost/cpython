@@ -5,6 +5,7 @@
 #include "pycore_brc.h"           // _Py_brc_queue_object()
 #include "pycore_call.h"          // _PyObject_CallNoArgs()
 #include "pycore_ceval.h"         // _Py_EnterRecursiveCallTstate()
+#include "pycore_choiceobject.h"  // _PyChoice_Type
 #include "pycore_context.h"       // _PyContextTokenMissing_Type
 #include "pycore_critical_section.h" // Py_BEGIN_CRITICAL_SECTION
 #include "pycore_descrobject.h"   // _PyMethodWrapper_Type
@@ -2533,6 +2534,7 @@ static PyTypeObject* static_types[] = {
     &_PyAsyncGenAThrow_Type,
     &_PyAsyncGenWrappedValue_Type,
     &_PyBufferWrapper_Type,
+    &_PyChoice_Type,
     &_PyContextTokenMissing_Type,
     &_PyCoroWrapper_Type,
     &_Py_GenericAliasIterType,

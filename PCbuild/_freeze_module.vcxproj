@@ -131,6 +131,7 @@
     <ClCompile Include="..\Objects\call.c" />
     <ClCompile Include="..\Objects\capsule.c" />
     <ClCompile Include="..\Objects\cellobject.c" />
+    <ClCompile Include="..\Objects\choiceobject.c" />
     <ClCompile Include="..\Objects\classobject.c" />
     <ClCompile Include="..\Objects\codeobject.c" />
     <ClCompile Include="..\Objects\complexobject.c" />

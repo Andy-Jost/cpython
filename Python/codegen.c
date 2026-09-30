@@ -3154,6 +3154,16 @@ addop_binary(compiler *c, location loc, operator_ty binop,
         case FloorDiv:
             oparg = inplace ? NB_INPLACE_FLOOR_DIVIDE : NB_FLOOR_DIVIDE;
             break;
+        case Choice:
+            if (inplace) {
+                /* The grammar has no '?=' and Python/ast.c rejects
+                   AugAssign(op=Choice()). */
+                PyErr_SetString(PyExc_SystemError,
+                                "choice operator has no in-place form");
+                return ERROR;
+            }
+            oparg = NB_CHOICE;
+            break;
         default:
             PyErr_Format(PyExc_SystemError, "%s op %d should not be possible",
                          inplace ? "inplace" : "binary", binop);

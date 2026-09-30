@@ -274,6 +274,7 @@ _opcode_get_nb_ops_impl(PyObject *module)
     ADD_NB_OP(NB_INPLACE_TRUE_DIVIDE, "/=");
     ADD_NB_OP(NB_INPLACE_XOR, "^=");
     ADD_NB_OP(NB_SUBSCR, "[]");
+    ADD_NB_OP(NB_CHOICE, "?");
 
 #undef ADD_NB_OP
 

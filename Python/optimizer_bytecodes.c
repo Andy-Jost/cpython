@@ -164,6 +164,11 @@ dummy_func(void) {
             // There's something other than an int or float involved:
             res = sym_new_unknown(ctx);
         }
+        else if (oparg == NB_CHOICE) {
+            // int and float have no __choice__, so the result is a
+            // types.ChoiceType node, never a number. Keep the guards.
+            res = sym_new_not_null(ctx);
+        }
         else if (oparg == NB_POWER || oparg == NB_INPLACE_POWER) {
             // This one's fun... the *type* of the result depends on the
             // *values* being exponentiated. However, exponents with one

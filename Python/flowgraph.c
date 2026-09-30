@@ -1836,6 +1836,10 @@ eval_const_binop(PyObject *left, int op, PyObject *right)
         case NB_MATRIX_MULTIPLY:
             // No builtin constants implement matrix multiplication
             break;
+        case NB_CHOICE:
+            // Never fold: each evaluation must create a fresh node, and a
+            // node cannot be marshalled into a .pyc
+            break;
         default:
             Py_UNREACHABLE();
     }

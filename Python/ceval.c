@@ -654,6 +654,7 @@ const binaryfunc _PyEval_BinaryOps[] = {
     [NB_INPLACE_TRUE_DIVIDE] = PyNumber_InPlaceTrueDivide,
     [NB_INPLACE_XOR] = PyNumber_InPlaceXor,
     [NB_SUBSCR] = PyObject_GetItem,
+    [NB_CHOICE] = PyNumber_Choice,
 };
 
 const conversion_func _PyEval_ConversionFuncs[4] = {

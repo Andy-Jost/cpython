@@ -2432,6 +2432,8 @@ binary_op_fail_kind(int oparg, PyObject *lhs, PyObject *rhs)
                 return SPEC_FAIL_BINARY_OP_SUBSCR_OTHER_SLICE;
             }
             return SPEC_FAIL_BINARY_OP_SUBSCR;
+        case NB_CHOICE:
+            return SPEC_FAIL_OTHER;
     }
     Py_UNREACHABLE();
 }

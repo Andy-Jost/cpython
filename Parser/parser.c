@@ -9,12 +9,12 @@
 
 #ifdef __wasi__
 #  ifdef Py_DEBUG
-#    define MAXSTACK 1000
+#    define MAXSTACK 1250  /* choice fork: stock 1000 + 250, one extra parser frame per bracket level (MAXLEVEL 200) */
 #  else
-#    define MAXSTACK 4000
+#    define MAXSTACK 4250  /* choice fork: stock 4000 + 250, same reason */
 #  endif
 #else
-#  define MAXSTACK 6250  /* choice fork: one extra parser frame per bracket level (MAXLEVEL 200) */
+#  define MAXSTACK 6250  /* choice fork: stock 6000 + 250, same reason */
 #endif
 static const int n_keyword_lists = 9;
 static KeywordToken *reserved_keywords[] = {

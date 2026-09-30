@@ -698,7 +698,7 @@ def _unmarshal_code(self, pathname, fullpath, fullname, data):
             source_bytes = _get_pyc_source(self, fullpath)
             if source_bytes is not None:
                 source_hash = _imp.source_hash(
-                    _imp.pyc_magic_number_token,
+                    _unpack_uint32(data[:4]),
                     source_bytes,
                 )
 

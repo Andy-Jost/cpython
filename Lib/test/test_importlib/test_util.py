@@ -658,8 +658,15 @@ class MagicNumberTests(unittest.TestCase):
         # stakeholders such as OS package maintainers must be notified
         # in advance. Such exceptional releases will then require an
         # adjustment to this test case.
-        EXPECTED_MAGIC_NUMBER = 3627
+        # This fork writes the stock magic plus 2000 (docs/design.md section 7)
+        # and still loads stock .pyc files; the stock value is exported as
+        # _imp.pyc_magic_number_token_stock.
+        EXPECTED_MAGIC_NUMBER = 5627
         actual = int.from_bytes(importlib.util.MAGIC_NUMBER[:2], 'little')
+        import _imp
+        stock = _imp.pyc_magic_number_token_stock & 0xFFFF
+        self.assertEqual(stock, 3627)
+        self.assertEqual(EXPECTED_MAGIC_NUMBER, stock + 2000)
 
         msg = (
             "To avoid breaking backwards compatibility with cached bytecode "

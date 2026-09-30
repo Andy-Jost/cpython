@@ -4930,6 +4930,13 @@ imp_module_exec(PyObject *module)
         return -1;
     }
 
+    if (PyModule_AddIntConstant(
+            module, "pyc_magic_number_token_stock",
+            PYC_MAGIC_NUMBER_STOCK_TOKEN) < 0)
+    {
+        return -1;
+    }
+
     return 0;
 }
 

@@ -27,7 +27,8 @@ def read_code(stream):
     import marshal
 
     magic = stream.read(4)
-    if magic != importlib.util.MAGIC_NUMBER:
+    if (magic != importlib.util.MAGIC_NUMBER and
+            magic != importlib._bootstrap_external._STOCK_MAGIC_NUMBER):
         return None
 
     stream.read(12) # Skip rest of the header

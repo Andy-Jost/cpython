@@ -3412,9 +3412,15 @@ class TestMagicNumber(unittest.TestCase):
         magic_number_bytes = _imp.pyc_magic_number_token.to_bytes(4, 'little')
         self.assertEqual(magic_number_bytes[2:], b'\r\n')
         # Starting with Python 3.11, Python 3.n starts with magic number 2900+50n.
-        magic_number = int.from_bytes(magic_number_bytes[:2], 'little')
+        # This fork writes the stock value plus 2000 and keeps reading the stock
+        # value, so the window applies to the stock token.
+        stock_bytes = _imp.pyc_magic_number_token_stock.to_bytes(4, 'little')
+        self.assertEqual(stock_bytes[2:], b'\r\n')
+        stock_magic = int.from_bytes(stock_bytes[:2], 'little')
         start = 2900 + sys.version_info.minor * 50
-        self.assertIn(magic_number, range(start, start + 50))
+        self.assertIn(stock_magic, range(start, start + 50))
+        magic_number = int.from_bytes(magic_number_bytes[:2], 'little')
+        self.assertEqual(magic_number, stock_magic + 2000)
 
 
 if __name__ == '__main__':

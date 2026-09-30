@@ -222,6 +222,9 @@ def _write_atomic(path, data, mode=0o666):
 _code_type = type(_write_atomic.__code__)
 
 MAGIC_NUMBER = _imp.pyc_magic_number_token.to_bytes(4, 'little')
+# Choice fork: magic number of the stock CPython release this fork tracks.
+# _classify_pyc() accepts both values.  The fork writes only MAGIC_NUMBER.
+_STOCK_MAGIC_NUMBER = _imp.pyc_magic_number_token_stock.to_bytes(4, 'little')
 
 _PYCACHE = '__pycache__'
 _OPT = 'opt-'
@@ -433,12 +436,13 @@ def _classify_pyc(data, name, exc_details):
     *exc_details* is a dictionary passed to ImportError if it raised for
     improved debugging.
 
-    ImportError is raised when the magic number is incorrect or when the flags
-    field is invalid. EOFError is raised when the data is found to be truncated.
+    ImportError is raised when the magic number is neither the fork's nor
+    the stock value, or when the flags field is invalid. EOFError is raised
+    when the data is found to be truncated.
 
     """
     magic = data[:4]
-    if magic != MAGIC_NUMBER:
+    if magic != MAGIC_NUMBER and magic != _STOCK_MAGIC_NUMBER:
         message = f'bad magic number in {name!r}: {magic!r}'
         _bootstrap._verbose_message('{}', message)
         raise ImportError(message, **exc_details)
@@ -867,7 +871,7 @@ class SourceLoader(_LoaderBasics):
                                  _imp.check_hash_based_pycs == 'always')):
                                 source_bytes = self.get_data(source_path)
                                 source_hash = _imp.source_hash(
-                                    _imp.pyc_magic_number_token,
+                                    _unpack_uint32(data[:4]),
                                     source_bytes,
                                 )
                                 _validate_hash_pyc(data, source_hash, fullname,
@@ -895,9 +899,11 @@ class SourceLoader(_LoaderBasics):
         if (not sys.dont_write_bytecode and bytecode_path is not None and
                 source_mtime is not None):
             if hash_based:
-                if source_hash is None:
-                    source_hash = _imp.source_hash(_imp.pyc_magic_number_token,
-                                                   source_bytes)
+                # Choice fork: always key on the fork token; source_hash may
+                # hold the stock-keyed value from a stock pyc that failed
+                # validation (D8).
+                source_hash = _imp.source_hash(_imp.pyc_magic_number_token,
+                                               source_bytes)
                 data = _code_to_hash_pyc(code_object, source_hash, check_source)
             else:
                 data = _code_to_timestamp_pyc(code_object, source_mtime,

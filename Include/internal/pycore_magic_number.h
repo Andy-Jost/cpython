@@ -290,13 +290,26 @@ Known values:
 Whenever PYC_MAGIC_NUMBER is changed, the ranges in the magic_values array in
 PC/launcher.c must also be updated.
 
+Choice fork: PYC_MAGIC_NUMBER_STOCK is the value of the stock CPython release
+this fork tracks.  PYC_MAGIC_NUMBER, the value the fork writes, is
+PYC_MAGIC_NUMBER_STOCK + 2000, far outside the stock sequence (3.n starts at
+2900 + 50n).  The importer accepts both values (_classify_pyc in
+Lib/importlib/_bootstrap_external.py): stock .pyc files load in the fork, and
+stock interpreters reject fork .pyc files through the normal bad-magic path.
+On a rebase to a new stock release, update only PYC_MAGIC_NUMBER_STOCK.
+The fork does not update PC/launcher.c.
+
 */
 
-#define PYC_MAGIC_NUMBER 3627
+#define PYC_MAGIC_NUMBER_STOCK 3627
+#define PYC_MAGIC_NUMBER (PYC_MAGIC_NUMBER_STOCK + 2000)   /* 5627 */
 /* This is equivalent to converting PYC_MAGIC_NUMBER to 2 bytes
    (little-endian) and then appending b'\r\n'. */
 #define PYC_MAGIC_NUMBER_TOKEN \
     ((uint32_t)PYC_MAGIC_NUMBER | ((uint32_t)'\r' << 16) | ((uint32_t)'\n' << 24))
+/* The same derivation for the stock value. */
+#define PYC_MAGIC_NUMBER_STOCK_TOKEN \
+    ((uint32_t)PYC_MAGIC_NUMBER_STOCK | ((uint32_t)'\r' << 16) | ((uint32_t)'\n' << 24))
 
 
 #ifdef __cplusplus

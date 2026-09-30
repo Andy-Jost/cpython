@@ -17,6 +17,7 @@
 #include "pycore_fileutils.h"     // _PyFile_Flush
 #include "pycore_import.h"        // _PyImport_GetImportlibExternalLoader()
 #include "pycore_interp.h"        // PyInterpreterState.importlib
+#include "pycore_magic_number.h"  // PYC_MAGIC_NUMBER_STOCK_TOKEN
 #include "pycore_object.h"        // _PyDebug_PrintTotalRefs()
 #include "pycore_parser.h"        // _PyParser_ASTFromString()
 #include "pycore_pyerrors.h"      // _PyErr_GetRaisedException()
@@ -428,6 +429,7 @@ maybe_pyc_file(FILE *fp, PyObject *filename, int closeit)
        text mode, the bytes 3 and 4 of the magic (\r\n) might not
        be read as they are on disk. */
     unsigned int halfmagic = PyImport_GetMagicNumber() & 0xFFFF;
+    unsigned int stockhalf = PYC_MAGIC_NUMBER_STOCK_TOKEN & 0xFFFF;
     unsigned char buf[2];
     /* Mess:  In case of -x, the stream is NOT at its start now,
        and ungetc() was used to push back the first newline,
@@ -442,9 +444,11 @@ maybe_pyc_file(FILE *fp, PyObject *filename, int closeit)
     */
     int ispyc = 0;
     if (ftell(fp) == 0) {
-        if (fread(buf, 1, 2, fp) == 2 &&
-            ((unsigned int)buf[1]<<8 | buf[0]) == halfmagic)
-            ispyc = 1;
+        if (fread(buf, 1, 2, fp) == 2) {
+            unsigned int found = (unsigned int)buf[1]<<8 | buf[0];
+            if (found == halfmagic || found == stockhalf)
+                ispyc = 1;
+        }
         rewind(fp);
     }
     return ispyc;
@@ -1503,7 +1507,8 @@ run_pyc_file(FILE *fp, PyObject *globals, PyObject *locals,
     long PyImport_GetMagicNumber(void);
 
     magic = PyMarshal_ReadLongFromFile(fp);
-    if (magic != PyImport_GetMagicNumber()) {
+    if (magic != PyImport_GetMagicNumber() &&
+        magic != (long)PYC_MAGIC_NUMBER_STOCK_TOKEN) {
         if (!PyErr_Occurred())
             PyErr_SetString(PyExc_RuntimeError,
                        "Bad magic number in .pyc file");

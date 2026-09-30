@@ -40,6 +40,8 @@ struct ast_state {
     PyObject *BoolOp_type;
     PyObject *Break_type;
     PyObject *Call_type;
+    PyObject *Choice_singleton;
+    PyObject *Choice_type;
     PyObject *ClassDef_type;
     PyObject *Compare_type;
     PyObject *Constant_type;

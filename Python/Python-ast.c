@@ -57,6 +57,8 @@ void _PyAST_Fini(PyInterpreterState *interp)
     Py_CLEAR(state->BoolOp_type);
     Py_CLEAR(state->Break_type);
     Py_CLEAR(state->Call_type);
+    Py_CLEAR(state->Choice_singleton);
+    Py_CLEAR(state->Choice_type);
     Py_CLEAR(state->ClassDef_type);
     Py_CLEAR(state->Compare_type);
     Py_CLEAR(state->Constant_type);
@@ -3922,6 +3924,21 @@ add_ast_annotations(struct ast_state *state)
         return 0;
     }
     Py_DECREF(FloorDiv_annotations);
+    PyObject *Choice_annotations = PyDict_New();
+    if (!Choice_annotations) return 0;
+    cond = PyObject_SetAttrString(state->Choice_type, "_field_types",
+                                  Choice_annotations) == 0;
+    if (!cond) {
+        Py_DECREF(Choice_annotations);
+        return 0;
+    }
+    cond = PyObject_SetAttrString(state->Choice_type, "__annotations__",
+                                  Choice_annotations) == 0;
+    if (!cond) {
+        Py_DECREF(Choice_annotations);
+        return 0;
+    }
+    Py_DECREF(Choice_annotations);
     PyObject *Invert_annotations = PyDict_New();
     if (!Invert_annotations) return 0;
     cond = PyObject_SetAttrString(state->Invert_type, "_field_types",
@@ -6596,7 +6613,7 @@ init_types(void *arg)
     if (!state->Or_singleton) return -1;
     state->operator_type = make_type(state, "operator", state->AST_type, NULL,
                                      0,
-        "operator = Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift | RShift | BitOr | BitXor | BitAnd | FloorDiv");
+        "operator = Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift | RShift | BitOr | BitXor | BitAnd | FloorDiv | Choice");
     if (!state->operator_type) return -1;
     if (add_attributes(state, state->operator_type, NULL, 0) < 0) return -1;
     state->Add_type = make_type(state, "Add", state->operator_type, NULL, 0,
@@ -6689,6 +6706,14 @@ init_types(void *arg)
                                                   *)state->FloorDiv_type, NULL,
                                                   NULL);
     if (!state->FloorDiv_singleton) return -1;
+    state->Choice_type = make_type(state, "Choice", state->operator_type, NULL,
+                                   0,
+        "Choice");
+    if (!state->Choice_type) return -1;
+    state->Choice_singleton = PyType_GenericNew((PyTypeObject
+                                                *)state->Choice_type, NULL,
+                                                NULL);
+    if (!state->Choice_singleton) return -1;
     state->unaryop_type = make_type(state, "unaryop", state->AST_type, NULL, 0,
         "unaryop = Invert | Not | UAdd | USub");
     if (!state->unaryop_type) return -1;
@@ -10133,6 +10158,8 @@ PyObject* ast2obj_operator(struct ast_state *state, operator_ty o)
             return Py_NewRef(state->BitAnd_singleton);
         case FloorDiv:
             return Py_NewRef(state->FloorDiv_singleton);
+        case Choice:
+            return Py_NewRef(state->Choice_singleton);
     }
     Py_UNREACHABLE();
 }
@@ -15871,6 +15898,14 @@ obj2ast_operator(struct ast_state *state, PyObject* obj, operator_ty* out,
         *out = FloorDiv;
         return 0;
     }
+    isinstance = PyObject_IsInstance(obj, state->Choice_type);
+    if (isinstance == -1) {
+        return -1;
+    }
+    if (isinstance) {
+        *out = Choice;
+        return 0;
+    }
 
     PyErr_Format(PyExc_TypeError, "expected some sort of operator, but got %R", obj);
     return -1;
@@ -18258,6 +18293,9 @@ astmodule_exec(PyObject *m)
         return -1;
     }
     if (PyModule_AddObjectRef(m, "FloorDiv", state->FloorDiv_type) < 0) {
+        return -1;
+    }
+    if (PyModule_AddObjectRef(m, "Choice", state->Choice_type) < 0) {
         return -1;
     }
     if (PyModule_AddObjectRef(m, "unaryop", state->unaryop_type) < 0) {

@@ -14,7 +14,7 @@
 #    define MAXSTACK 4000
 #  endif
 #else
-#  define MAXSTACK 6000
+#  define MAXSTACK 6250  /* choice fork: one extra parser frame per bracket level (MAXLEVEL 200) */
 #endif
 static const int n_keyword_lists = 9;
 static KeywordToken *reserved_keywords[] = {
@@ -194,341 +194,342 @@ static char *soft_keywords[] = {
 #define type_param_starred_default_type 1107
 #define expressions_type 1108
 #define expression_type 1109
-#define yield_expr_type 1110
-#define star_expressions_type 1111
-#define star_expression_type 1112
-#define star_named_expressions_type 1113
-#define star_named_expression_type 1114
-#define assignment_expression_type 1115
-#define named_expression_type 1116
-#define disjunction_type 1117
-#define conjunction_type 1118
-#define inversion_type 1119
-#define comparison_type 1120
-#define compare_op_bitwise_or_pair_type 1121
-#define eq_bitwise_or_type 1122
-#define noteq_bitwise_or_type 1123
-#define lte_bitwise_or_type 1124
-#define lt_bitwise_or_type 1125
-#define gte_bitwise_or_type 1126
-#define gt_bitwise_or_type 1127
-#define notin_bitwise_or_type 1128
-#define in_bitwise_or_type 1129
-#define isnot_bitwise_or_type 1130
-#define is_bitwise_or_type 1131
-#define bitwise_or_type 1132  // Left-recursive
-#define bitwise_xor_type 1133  // Left-recursive
-#define bitwise_and_type 1134  // Left-recursive
-#define shift_expr_type 1135  // Left-recursive
-#define sum_type 1136  // Left-recursive
-#define term_type 1137  // Left-recursive
-#define factor_type 1138
-#define power_type 1139
-#define await_primary_type 1140
-#define primary_type 1141  // Left-recursive
-#define slices_type 1142
-#define slice_type 1143
-#define atom_type 1144
-#define group_type 1145
-#define lambdef_type 1146
-#define lambda_params_type 1147
-#define lambda_parameters_type 1148
-#define lambda_slash_no_default_type 1149
-#define lambda_slash_with_default_type 1150
-#define lambda_star_etc_type 1151
-#define lambda_kwds_type 1152
-#define lambda_param_no_default_type 1153
-#define lambda_param_with_default_type 1154
-#define lambda_param_maybe_default_type 1155
-#define lambda_param_type 1156
-#define fstring_middle_type 1157
-#define fstring_replacement_field_type 1158
-#define fstring_conversion_type 1159
-#define fstring_full_format_spec_type 1160
-#define fstring_format_spec_type 1161
-#define fstring_type 1162
-#define tstring_format_spec_replacement_field_type 1163
-#define tstring_format_spec_type 1164
-#define tstring_full_format_spec_type 1165
-#define tstring_replacement_field_type 1166
-#define tstring_middle_type 1167
-#define tstring_type 1168
-#define string_type 1169
-#define strings_type 1170
-#define list_type 1171
-#define tuple_type 1172
-#define set_type 1173
-#define dict_type 1174
-#define double_starred_kvpairs_type 1175
-#define double_starred_kvpair_type 1176
-#define kvpair_type 1177
-#define for_if_clauses_type 1178
-#define for_if_clause_type 1179
-#define listcomp_type 1180
-#define setcomp_type 1181
-#define genexp_type 1182
-#define dictcomp_type 1183
-#define arguments_type 1184
-#define args_type 1185
-#define kwargs_type 1186
-#define starred_expression_type 1187
-#define kwarg_or_starred_type 1188
-#define kwarg_or_double_starred_type 1189
-#define star_targets_type 1190
-#define star_targets_list_seq_type 1191
-#define star_targets_tuple_seq_type 1192
-#define star_target_type 1193
-#define target_with_star_atom_type 1194
-#define star_atom_type 1195
-#define single_target_type 1196
-#define single_subscript_attribute_target_type 1197
-#define t_primary_type 1198  // Left-recursive
-#define t_lookahead_type 1199
-#define del_targets_type 1200
-#define del_target_type 1201
-#define del_t_atom_type 1202
-#define type_expressions_type 1203
-#define func_type_comment_type 1204
-#define invalid_arguments_type 1205
-#define invalid_kwarg_type 1206
-#define expression_without_invalid_type 1207
-#define invalid_legacy_expression_type 1208
-#define invalid_type_param_type 1209
-#define invalid_expression_type 1210
-#define invalid_named_expression_type 1211
-#define invalid_assignment_type 1212
-#define invalid_ann_assign_target_type 1213
-#define invalid_del_stmt_type 1214
-#define invalid_block_type 1215
-#define invalid_comprehension_type 1216
-#define invalid_dict_comprehension_type 1217
-#define invalid_parameters_type 1218
-#define invalid_default_type 1219
-#define invalid_star_etc_type 1220
-#define invalid_kwds_type 1221
-#define invalid_parameters_helper_type 1222
-#define invalid_lambda_parameters_type 1223
-#define invalid_lambda_parameters_helper_type 1224
-#define invalid_lambda_star_etc_type 1225
-#define invalid_lambda_kwds_type 1226
-#define invalid_double_type_comments_type 1227
-#define invalid_with_item_type 1228
-#define invalid_for_if_clause_type 1229
-#define invalid_for_target_type 1230
-#define invalid_group_type 1231
-#define invalid_import_type 1232
-#define invalid_dotted_as_name_type 1233
-#define invalid_import_from_as_name_type 1234
-#define invalid_import_from_targets_type 1235
-#define invalid_with_stmt_type 1236
-#define invalid_with_stmt_indent_type 1237
-#define invalid_try_stmt_type 1238
-#define invalid_except_stmt_type 1239
-#define invalid_except_star_stmt_type 1240
-#define invalid_finally_stmt_type 1241
-#define invalid_except_stmt_indent_type 1242
-#define invalid_except_star_stmt_indent_type 1243
-#define invalid_match_stmt_type 1244
-#define invalid_case_block_type 1245
-#define invalid_as_pattern_type 1246
-#define invalid_class_pattern_type 1247
-#define invalid_class_argument_pattern_type 1248
-#define invalid_if_stmt_type 1249
-#define invalid_elif_stmt_type 1250
-#define invalid_else_stmt_type 1251
-#define invalid_while_stmt_type 1252
-#define invalid_for_stmt_type 1253
-#define invalid_def_raw_type 1254
-#define invalid_class_def_raw_type 1255
-#define invalid_double_starred_kvpairs_type 1256
-#define invalid_kvpair_type 1257
-#define invalid_starred_expression_unpacking_type 1258
-#define invalid_starred_expression_type 1259
-#define invalid_fstring_replacement_field_type 1260
-#define invalid_fstring_conversion_character_type 1261
-#define invalid_tstring_replacement_field_type 1262
-#define invalid_tstring_conversion_character_type 1263
-#define invalid_string_tstring_concat_type 1264
-#define invalid_arithmetic_type 1265
-#define invalid_factor_type 1266
-#define invalid_type_params_type 1267
-#define _loop0_1_type 1268
-#define _loop1_2_type 1269
-#define _loop0_3_type 1270
-#define _gather_4_type 1271
-#define _tmp_5_type 1272
-#define _tmp_6_type 1273
-#define _tmp_7_type 1274
-#define _tmp_8_type 1275
-#define _tmp_9_type 1276
-#define _tmp_10_type 1277
-#define _tmp_11_type 1278
-#define _loop1_12_type 1279
-#define _tmp_13_type 1280
-#define _loop0_14_type 1281
-#define _gather_15_type 1282
-#define _tmp_16_type 1283
-#define _tmp_17_type 1284
-#define _loop0_18_type 1285
-#define _loop1_19_type 1286
-#define _loop0_20_type 1287
-#define _gather_21_type 1288
-#define _tmp_22_type 1289
-#define _loop0_23_type 1290
-#define _gather_24_type 1291
-#define _loop1_25_type 1292
-#define _tmp_26_type 1293
-#define _tmp_27_type 1294
-#define _loop0_28_type 1295
-#define _loop0_29_type 1296
-#define _loop1_30_type 1297
-#define _loop1_31_type 1298
-#define _loop0_32_type 1299
-#define _loop1_33_type 1300
-#define _loop0_34_type 1301
-#define _gather_35_type 1302
-#define _tmp_36_type 1303
-#define _loop1_37_type 1304
-#define _loop1_38_type 1305
-#define _loop1_39_type 1306
-#define _loop0_40_type 1307
-#define _gather_41_type 1308
-#define _tmp_42_type 1309
-#define _tmp_43_type 1310
-#define _tmp_44_type 1311
-#define _loop0_45_type 1312
-#define _gather_46_type 1313
-#define _loop0_47_type 1314
-#define _gather_48_type 1315
-#define _tmp_49_type 1316
-#define _loop0_50_type 1317
-#define _gather_51_type 1318
-#define _loop0_52_type 1319
-#define _gather_53_type 1320
-#define _loop0_54_type 1321
-#define _gather_55_type 1322
-#define _loop1_56_type 1323
-#define _loop1_57_type 1324
-#define _loop0_58_type 1325
-#define _gather_59_type 1326
-#define _loop1_60_type 1327
-#define _loop1_61_type 1328
-#define _loop1_62_type 1329
-#define _tmp_63_type 1330
-#define _loop0_64_type 1331
-#define _gather_65_type 1332
-#define _tmp_66_type 1333
-#define _tmp_67_type 1334
-#define _tmp_68_type 1335
-#define _tmp_69_type 1336
-#define _tmp_70_type 1337
-#define _loop0_71_type 1338
-#define _loop0_72_type 1339
-#define _loop1_73_type 1340
-#define _loop1_74_type 1341
-#define _loop0_75_type 1342
-#define _loop1_76_type 1343
-#define _loop0_77_type 1344
-#define _loop0_78_type 1345
-#define _loop0_79_type 1346
-#define _loop0_80_type 1347
-#define _loop1_81_type 1348
-#define _loop1_82_type 1349
-#define _tmp_83_type 1350
-#define _loop0_84_type 1351
-#define _gather_85_type 1352
-#define _loop1_86_type 1353
-#define _loop0_87_type 1354
-#define _tmp_88_type 1355
-#define _loop0_89_type 1356
-#define _gather_90_type 1357
-#define _tmp_91_type 1358
-#define _loop0_92_type 1359
-#define _gather_93_type 1360
-#define _loop0_94_type 1361
-#define _gather_95_type 1362
-#define _loop0_96_type 1363
-#define _loop0_97_type 1364
-#define _gather_98_type 1365
-#define _loop1_99_type 1366
-#define _tmp_100_type 1367
-#define _loop0_101_type 1368
-#define _gather_102_type 1369
-#define _loop0_103_type 1370
-#define _gather_104_type 1371
-#define _tmp_105_type 1372
-#define _tmp_106_type 1373
-#define _loop0_107_type 1374
-#define _gather_108_type 1375
-#define _tmp_109_type 1376
-#define _tmp_110_type 1377
-#define _tmp_111_type 1378
-#define _tmp_112_type 1379
-#define _tmp_113_type 1380
-#define _loop1_114_type 1381
-#define _tmp_115_type 1382
-#define _tmp_116_type 1383
-#define _tmp_117_type 1384
-#define _tmp_118_type 1385
-#define _tmp_119_type 1386
-#define _loop0_120_type 1387
-#define _loop0_121_type 1388
-#define _tmp_122_type 1389
-#define _tmp_123_type 1390
-#define _tmp_124_type 1391
-#define _tmp_125_type 1392
-#define _tmp_126_type 1393
-#define _tmp_127_type 1394
-#define _tmp_128_type 1395
-#define _tmp_129_type 1396
-#define _tmp_130_type 1397
-#define _loop0_131_type 1398
-#define _gather_132_type 1399
-#define _tmp_133_type 1400
-#define _tmp_134_type 1401
-#define _tmp_135_type 1402
-#define _tmp_136_type 1403
-#define _loop0_137_type 1404
-#define _gather_138_type 1405
-#define _tmp_139_type 1406
-#define _loop0_140_type 1407
-#define _gather_141_type 1408
-#define _loop0_142_type 1409
-#define _gather_143_type 1410
-#define _tmp_144_type 1411
-#define _loop0_145_type 1412
-#define _tmp_146_type 1413
-#define _tmp_147_type 1414
-#define _tmp_148_type 1415
-#define _tmp_149_type 1416
-#define _tmp_150_type 1417
-#define _tmp_151_type 1418
-#define _tmp_152_type 1419
-#define _tmp_153_type 1420
-#define _tmp_154_type 1421
-#define _tmp_155_type 1422
-#define _tmp_156_type 1423
-#define _tmp_157_type 1424
-#define _tmp_158_type 1425
-#define _tmp_159_type 1426
-#define _tmp_160_type 1427
-#define _tmp_161_type 1428
-#define _tmp_162_type 1429
-#define _tmp_163_type 1430
-#define _tmp_164_type 1431
-#define _tmp_165_type 1432
-#define _tmp_166_type 1433
-#define _tmp_167_type 1434
-#define _tmp_168_type 1435
-#define _tmp_169_type 1436
-#define _tmp_170_type 1437
-#define _tmp_171_type 1438
-#define _loop0_172_type 1439
-#define _tmp_173_type 1440
-#define _tmp_174_type 1441
-#define _tmp_175_type 1442
-#define _tmp_176_type 1443
-#define _tmp_177_type 1444
+#define choice_type 1110
+#define yield_expr_type 1111
+#define star_expressions_type 1112
+#define star_expression_type 1113
+#define star_named_expressions_type 1114
+#define star_named_expression_type 1115
+#define assignment_expression_type 1116
+#define named_expression_type 1117
+#define disjunction_type 1118
+#define conjunction_type 1119
+#define inversion_type 1120
+#define comparison_type 1121
+#define compare_op_bitwise_or_pair_type 1122
+#define eq_bitwise_or_type 1123
+#define noteq_bitwise_or_type 1124
+#define lte_bitwise_or_type 1125
+#define lt_bitwise_or_type 1126
+#define gte_bitwise_or_type 1127
+#define gt_bitwise_or_type 1128
+#define notin_bitwise_or_type 1129
+#define in_bitwise_or_type 1130
+#define isnot_bitwise_or_type 1131
+#define is_bitwise_or_type 1132
+#define bitwise_or_type 1133  // Left-recursive
+#define bitwise_xor_type 1134  // Left-recursive
+#define bitwise_and_type 1135  // Left-recursive
+#define shift_expr_type 1136  // Left-recursive
+#define sum_type 1137  // Left-recursive
+#define term_type 1138  // Left-recursive
+#define factor_type 1139
+#define power_type 1140
+#define await_primary_type 1141
+#define primary_type 1142  // Left-recursive
+#define slices_type 1143
+#define slice_type 1144
+#define atom_type 1145
+#define group_type 1146
+#define lambdef_type 1147
+#define lambda_params_type 1148
+#define lambda_parameters_type 1149
+#define lambda_slash_no_default_type 1150
+#define lambda_slash_with_default_type 1151
+#define lambda_star_etc_type 1152
+#define lambda_kwds_type 1153
+#define lambda_param_no_default_type 1154
+#define lambda_param_with_default_type 1155
+#define lambda_param_maybe_default_type 1156
+#define lambda_param_type 1157
+#define fstring_middle_type 1158
+#define fstring_replacement_field_type 1159
+#define fstring_conversion_type 1160
+#define fstring_full_format_spec_type 1161
+#define fstring_format_spec_type 1162
+#define fstring_type 1163
+#define tstring_format_spec_replacement_field_type 1164
+#define tstring_format_spec_type 1165
+#define tstring_full_format_spec_type 1166
+#define tstring_replacement_field_type 1167
+#define tstring_middle_type 1168
+#define tstring_type 1169
+#define string_type 1170
+#define strings_type 1171
+#define list_type 1172
+#define tuple_type 1173
+#define set_type 1174
+#define dict_type 1175
+#define double_starred_kvpairs_type 1176
+#define double_starred_kvpair_type 1177
+#define kvpair_type 1178
+#define for_if_clauses_type 1179
+#define for_if_clause_type 1180
+#define listcomp_type 1181
+#define setcomp_type 1182
+#define genexp_type 1183
+#define dictcomp_type 1184
+#define arguments_type 1185
+#define args_type 1186
+#define kwargs_type 1187
+#define starred_expression_type 1188
+#define kwarg_or_starred_type 1189
+#define kwarg_or_double_starred_type 1190
+#define star_targets_type 1191
+#define star_targets_list_seq_type 1192
+#define star_targets_tuple_seq_type 1193
+#define star_target_type 1194
+#define target_with_star_atom_type 1195
+#define star_atom_type 1196
+#define single_target_type 1197
+#define single_subscript_attribute_target_type 1198
+#define t_primary_type 1199  // Left-recursive
+#define t_lookahead_type 1200
+#define del_targets_type 1201
+#define del_target_type 1202
+#define del_t_atom_type 1203
+#define type_expressions_type 1204
+#define func_type_comment_type 1205
+#define invalid_arguments_type 1206
+#define invalid_kwarg_type 1207
+#define expression_without_invalid_type 1208
+#define invalid_legacy_expression_type 1209
+#define invalid_type_param_type 1210
+#define invalid_expression_type 1211
+#define invalid_named_expression_type 1212
+#define invalid_assignment_type 1213
+#define invalid_ann_assign_target_type 1214
+#define invalid_del_stmt_type 1215
+#define invalid_block_type 1216
+#define invalid_comprehension_type 1217
+#define invalid_dict_comprehension_type 1218
+#define invalid_parameters_type 1219
+#define invalid_default_type 1220
+#define invalid_star_etc_type 1221
+#define invalid_kwds_type 1222
+#define invalid_parameters_helper_type 1223
+#define invalid_lambda_parameters_type 1224
+#define invalid_lambda_parameters_helper_type 1225
+#define invalid_lambda_star_etc_type 1226
+#define invalid_lambda_kwds_type 1227
+#define invalid_double_type_comments_type 1228
+#define invalid_with_item_type 1229
+#define invalid_for_if_clause_type 1230
+#define invalid_for_target_type 1231
+#define invalid_group_type 1232
+#define invalid_import_type 1233
+#define invalid_dotted_as_name_type 1234
+#define invalid_import_from_as_name_type 1235
+#define invalid_import_from_targets_type 1236
+#define invalid_with_stmt_type 1237
+#define invalid_with_stmt_indent_type 1238
+#define invalid_try_stmt_type 1239
+#define invalid_except_stmt_type 1240
+#define invalid_except_star_stmt_type 1241
+#define invalid_finally_stmt_type 1242
+#define invalid_except_stmt_indent_type 1243
+#define invalid_except_star_stmt_indent_type 1244
+#define invalid_match_stmt_type 1245
+#define invalid_case_block_type 1246
+#define invalid_as_pattern_type 1247
+#define invalid_class_pattern_type 1248
+#define invalid_class_argument_pattern_type 1249
+#define invalid_if_stmt_type 1250
+#define invalid_elif_stmt_type 1251
+#define invalid_else_stmt_type 1252
+#define invalid_while_stmt_type 1253
+#define invalid_for_stmt_type 1254
+#define invalid_def_raw_type 1255
+#define invalid_class_def_raw_type 1256
+#define invalid_double_starred_kvpairs_type 1257
+#define invalid_kvpair_type 1258
+#define invalid_starred_expression_unpacking_type 1259
+#define invalid_starred_expression_type 1260
+#define invalid_fstring_replacement_field_type 1261
+#define invalid_fstring_conversion_character_type 1262
+#define invalid_tstring_replacement_field_type 1263
+#define invalid_tstring_conversion_character_type 1264
+#define invalid_string_tstring_concat_type 1265
+#define invalid_arithmetic_type 1266
+#define invalid_factor_type 1267
+#define invalid_type_params_type 1268
+#define _loop0_1_type 1269
+#define _loop1_2_type 1270
+#define _loop0_3_type 1271
+#define _gather_4_type 1272
+#define _tmp_5_type 1273
+#define _tmp_6_type 1274
+#define _tmp_7_type 1275
+#define _tmp_8_type 1276
+#define _tmp_9_type 1277
+#define _tmp_10_type 1278
+#define _tmp_11_type 1279
+#define _loop1_12_type 1280
+#define _tmp_13_type 1281
+#define _loop0_14_type 1282
+#define _gather_15_type 1283
+#define _tmp_16_type 1284
+#define _tmp_17_type 1285
+#define _loop0_18_type 1286
+#define _loop1_19_type 1287
+#define _loop0_20_type 1288
+#define _gather_21_type 1289
+#define _tmp_22_type 1290
+#define _loop0_23_type 1291
+#define _gather_24_type 1292
+#define _loop1_25_type 1293
+#define _tmp_26_type 1294
+#define _tmp_27_type 1295
+#define _loop0_28_type 1296
+#define _loop0_29_type 1297
+#define _loop1_30_type 1298
+#define _loop1_31_type 1299
+#define _loop0_32_type 1300
+#define _loop1_33_type 1301
+#define _loop0_34_type 1302
+#define _gather_35_type 1303
+#define _tmp_36_type 1304
+#define _loop1_37_type 1305
+#define _loop1_38_type 1306
+#define _loop1_39_type 1307
+#define _loop0_40_type 1308
+#define _gather_41_type 1309
+#define _tmp_42_type 1310
+#define _tmp_43_type 1311
+#define _tmp_44_type 1312
+#define _loop0_45_type 1313
+#define _gather_46_type 1314
+#define _loop0_47_type 1315
+#define _gather_48_type 1316
+#define _tmp_49_type 1317
+#define _loop0_50_type 1318
+#define _gather_51_type 1319
+#define _loop0_52_type 1320
+#define _gather_53_type 1321
+#define _loop0_54_type 1322
+#define _gather_55_type 1323
+#define _loop1_56_type 1324
+#define _loop1_57_type 1325
+#define _loop0_58_type 1326
+#define _gather_59_type 1327
+#define _loop1_60_type 1328
+#define _loop1_61_type 1329
+#define _loop1_62_type 1330
+#define _tmp_63_type 1331
+#define _loop0_64_type 1332
+#define _gather_65_type 1333
+#define _tmp_66_type 1334
+#define _tmp_67_type 1335
+#define _tmp_68_type 1336
+#define _tmp_69_type 1337
+#define _tmp_70_type 1338
+#define _loop0_71_type 1339
+#define _loop0_72_type 1340
+#define _loop1_73_type 1341
+#define _loop1_74_type 1342
+#define _loop0_75_type 1343
+#define _loop1_76_type 1344
+#define _loop0_77_type 1345
+#define _loop0_78_type 1346
+#define _loop0_79_type 1347
+#define _loop0_80_type 1348
+#define _loop1_81_type 1349
+#define _loop1_82_type 1350
+#define _tmp_83_type 1351
+#define _loop0_84_type 1352
+#define _gather_85_type 1353
+#define _loop1_86_type 1354
+#define _loop0_87_type 1355
+#define _tmp_88_type 1356
+#define _loop0_89_type 1357
+#define _gather_90_type 1358
+#define _tmp_91_type 1359
+#define _loop0_92_type 1360
+#define _gather_93_type 1361
+#define _loop0_94_type 1362
+#define _gather_95_type 1363
+#define _loop0_96_type 1364
+#define _loop0_97_type 1365
+#define _gather_98_type 1366
+#define _loop1_99_type 1367
+#define _tmp_100_type 1368
+#define _loop0_101_type 1369
+#define _gather_102_type 1370
+#define _loop0_103_type 1371
+#define _gather_104_type 1372
+#define _tmp_105_type 1373
+#define _tmp_106_type 1374
+#define _loop0_107_type 1375
+#define _gather_108_type 1376
+#define _tmp_109_type 1377
+#define _tmp_110_type 1378
+#define _tmp_111_type 1379
+#define _tmp_112_type 1380
+#define _tmp_113_type 1381
+#define _loop1_114_type 1382
+#define _tmp_115_type 1383
+#define _tmp_116_type 1384
+#define _tmp_117_type 1385
+#define _tmp_118_type 1386
+#define _tmp_119_type 1387
+#define _loop0_120_type 1388
+#define _loop0_121_type 1389
+#define _tmp_122_type 1390
+#define _tmp_123_type 1391
+#define _tmp_124_type 1392
+#define _tmp_125_type 1393
+#define _tmp_126_type 1394
+#define _tmp_127_type 1395
+#define _tmp_128_type 1396
+#define _tmp_129_type 1397
+#define _tmp_130_type 1398
+#define _loop0_131_type 1399
+#define _gather_132_type 1400
+#define _tmp_133_type 1401
+#define _tmp_134_type 1402
+#define _tmp_135_type 1403
+#define _tmp_136_type 1404
+#define _loop0_137_type 1405
+#define _gather_138_type 1406
+#define _tmp_139_type 1407
+#define _loop0_140_type 1408
+#define _gather_141_type 1409
+#define _loop0_142_type 1410
+#define _gather_143_type 1411
+#define _tmp_144_type 1412
+#define _loop0_145_type 1413
+#define _tmp_146_type 1414
+#define _tmp_147_type 1415
+#define _tmp_148_type 1416
+#define _tmp_149_type 1417
+#define _tmp_150_type 1418
+#define _tmp_151_type 1419
+#define _tmp_152_type 1420
+#define _tmp_153_type 1421
+#define _tmp_154_type 1422
+#define _tmp_155_type 1423
+#define _tmp_156_type 1424
+#define _tmp_157_type 1425
+#define _tmp_158_type 1426
+#define _tmp_159_type 1427
+#define _tmp_160_type 1428
+#define _tmp_161_type 1429
+#define _tmp_162_type 1430
+#define _tmp_163_type 1431
+#define _tmp_164_type 1432
+#define _tmp_165_type 1433
+#define _tmp_166_type 1434
+#define _tmp_167_type 1435
+#define _tmp_168_type 1436
+#define _tmp_169_type 1437
+#define _tmp_170_type 1438
+#define _tmp_171_type 1439
+#define _loop0_172_type 1440
+#define _tmp_173_type 1441
+#define _tmp_174_type 1442
+#define _tmp_175_type 1443
+#define _tmp_176_type 1444
+#define _tmp_177_type 1445
 
 static mod_ty file_rule(Parser *p);
 static mod_ty interactive_rule(Parser *p);
@@ -640,6 +641,7 @@ static expr_ty type_param_default_rule(Parser *p);
 static expr_ty type_param_starred_default_rule(Parser *p);
 static expr_ty expressions_rule(Parser *p);
 static expr_ty expression_rule(Parser *p);
+static expr_ty choice_rule(Parser *p);
 static expr_ty yield_expr_rule(Parser *p);
 static expr_ty star_expressions_rule(Parser *p);
 static expr_ty star_expression_rule(Parser *p);
@@ -11331,8 +11333,8 @@ expressions_rule(Parser *p)
 // expression:
 //     | invalid_expression
 //     | invalid_legacy_expression
-//     | disjunction 'if' disjunction 'else' expression
-//     | disjunction
+//     | choice 'if' choice 'else' expression
+//     | choice
 //     | lambdef
 static expr_ty
 expression_rule(Parser *p)
@@ -11397,30 +11399,30 @@ expression_rule(Parser *p)
         D(fprintf(stderr, "%*c%s expression[%d-%d]: %s failed!\n", p->level, ' ',
                   p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "invalid_legacy_expression"));
     }
-    { // disjunction 'if' disjunction 'else' expression
+    { // choice 'if' choice 'else' expression
         if (p->error_indicator) {
             p->level--;
             return NULL;
         }
-        D(fprintf(stderr, "%*c> expression[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "disjunction 'if' disjunction 'else' expression"));
+        D(fprintf(stderr, "%*c> expression[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "choice 'if' choice 'else' expression"));
         Token * _keyword;
         Token * _keyword_1;
         expr_ty a;
         expr_ty b;
         expr_ty c;
         if (
-            (a = disjunction_rule(p))  // disjunction
+            (a = choice_rule(p))  // choice
             &&
             (_keyword = _PyPegen_expect_token(p, 682))  // token='if'
             &&
-            (b = disjunction_rule(p))  // disjunction
+            (b = choice_rule(p))  // choice
             &&
             (_keyword_1 = _PyPegen_expect_token(p, 686))  // token='else'
             &&
             (c = expression_rule(p))  // expression
         )
         {
-            D(fprintf(stderr, "%*c+ expression[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "disjunction 'if' disjunction 'else' expression"));
+            D(fprintf(stderr, "%*c+ expression[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "choice 'if' choice 'else' expression"));
             Token *_token = _PyPegen_get_last_nonnwhitespace_token(p);
             if (_token == NULL) {
                 p->level--;
@@ -11440,26 +11442,26 @@ expression_rule(Parser *p)
         }
         p->mark = _mark;
         D(fprintf(stderr, "%*c%s expression[%d-%d]: %s failed!\n", p->level, ' ',
-                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "disjunction 'if' disjunction 'else' expression"));
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "choice 'if' choice 'else' expression"));
     }
-    { // disjunction
+    { // choice
         if (p->error_indicator) {
             p->level--;
             return NULL;
         }
-        D(fprintf(stderr, "%*c> expression[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "disjunction"));
-        expr_ty disjunction_var;
+        D(fprintf(stderr, "%*c> expression[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "choice"));
+        expr_ty choice_var;
         if (
-            (disjunction_var = disjunction_rule(p))  // disjunction
+            (choice_var = choice_rule(p))  // choice
         )
         {
-            D(fprintf(stderr, "%*c+ expression[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "disjunction"));
-            _res = disjunction_var;
+            D(fprintf(stderr, "%*c+ expression[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "choice"));
+            _res = choice_var;
             goto done;
         }
         p->mark = _mark;
         D(fprintf(stderr, "%*c%s expression[%d-%d]: %s failed!\n", p->level, ' ',
-                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "disjunction"));
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "choice"));
     }
     { // lambdef
         if (p->error_indicator) {
@@ -11483,6 +11485,97 @@ expression_rule(Parser *p)
     _res = NULL;
   done:
     _PyPegen_insert_memo(p, _mark, expression_type, _res);
+    p->level--;
+    return _res;
+}
+
+// choice: disjunction '?' choice | disjunction
+static expr_ty
+choice_rule(Parser *p)
+{
+    if (p->level++ == MAXSTACK || _Py_ReachedRecursionLimitWithMargin(PyThreadState_Get(), 1)) {
+        _Pypegen_stack_overflow(p);
+    }
+    if (p->error_indicator) {
+        p->level--;
+        return NULL;
+    }
+    expr_ty _res = NULL;
+    if (_PyPegen_is_memoized(p, choice_type, &_res)) {
+        p->level--;
+        return _res;
+    }
+    int _mark = p->mark;
+    if (p->mark == p->fill && _PyPegen_fill_token(p) < 0) {
+        p->error_indicator = 1;
+        p->level--;
+        return NULL;
+    }
+    int _start_lineno = p->tokens[_mark]->lineno;
+    UNUSED(_start_lineno); // Only used by EXTRA macro
+    int _start_col_offset = p->tokens[_mark]->col_offset;
+    UNUSED(_start_col_offset); // Only used by EXTRA macro
+    { // disjunction '?' choice
+        if (p->error_indicator) {
+            p->level--;
+            return NULL;
+        }
+        D(fprintf(stderr, "%*c> choice[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "disjunction '?' choice"));
+        Token * _literal;
+        expr_ty a;
+        expr_ty b;
+        if (
+            (a = disjunction_rule(p))  // disjunction
+            &&
+            (_literal = _PyPegen_expect_token(p, 55))  // token='?'
+            &&
+            (b = choice_rule(p))  // choice
+        )
+        {
+            D(fprintf(stderr, "%*c+ choice[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "disjunction '?' choice"));
+            Token *_token = _PyPegen_get_last_nonnwhitespace_token(p);
+            if (_token == NULL) {
+                p->level--;
+                return NULL;
+            }
+            int _end_lineno = _token->end_lineno;
+            UNUSED(_end_lineno); // Only used by EXTRA macro
+            int _end_col_offset = _token->end_col_offset;
+            UNUSED(_end_col_offset); // Only used by EXTRA macro
+            _res = _PyAST_BinOp ( a , Choice , b , EXTRA );
+            if ((_res == NULL || p->error_indicator) && PyErr_Occurred()) {
+                p->error_indicator = 1;
+                p->level--;
+                return NULL;
+            }
+            goto done;
+        }
+        p->mark = _mark;
+        D(fprintf(stderr, "%*c%s choice[%d-%d]: %s failed!\n", p->level, ' ',
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "disjunction '?' choice"));
+    }
+    { // disjunction
+        if (p->error_indicator) {
+            p->level--;
+            return NULL;
+        }
+        D(fprintf(stderr, "%*c> choice[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "disjunction"));
+        expr_ty disjunction_var;
+        if (
+            (disjunction_var = disjunction_rule(p))  // disjunction
+        )
+        {
+            D(fprintf(stderr, "%*c+ choice[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "disjunction"));
+            _res = disjunction_var;
+            goto done;
+        }
+        p->mark = _mark;
+        D(fprintf(stderr, "%*c%s choice[%d-%d]: %s failed!\n", p->level, ' ',
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "disjunction"));
+    }
+    _res = NULL;
+  done:
+    _PyPegen_insert_memo(p, _mark, choice_type, _res);
     p->level--;
     return _res;
 }

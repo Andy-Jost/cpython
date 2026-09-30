@@ -4,6 +4,7 @@
 #include "pycore_abstract.h"      // _PyIndex_Check()
 #include "pycore_call.h"          // _PyObject_CallNoArgs()
 #include "pycore_ceval.h"         // _Py_EnterRecursiveCallTstate()
+#include "pycore_choiceobject.h"  // _PyChoice_New()
 #include "pycore_crossinterp.h"   // _Py_CallInInterpreter()
 #include "pycore_genobject.h"     // _PyGen_FetchStopIterationValue()
 #include "pycore_list.h"          // _PyList_AppendTakeRef()
@@ -1185,6 +1186,111 @@ BINARY_FUNC(PyNumber_MatrixMultiply, nb_matrix_multiply, "@")
 BINARY_FUNC(PyNumber_FloorDivide, nb_floor_divide, "//")
 BINARY_FUNC(PyNumber_TrueDivide, nb_true_divide, "/")
 BINARY_FUNC(PyNumber_Remainder, nb_remainder, "%")
+
+/* The choice operator "v ? w".
+
+   Calling scheme, mirroring binary_op1() above and SLOT1BINFULL() in
+   Objects/typeobject.c.  Two differences: there is no PyNumberMethods
+   slot, so __choice__ and __rchoice__ are looked up on the types by name;
+   and the end of the chain builds a types.ChoiceType node instead of
+   raising TypeError.
+
+   Order operations are tried until either a valid result or error:
+     w.__rchoice__(v)[*], v.__choice__(w), w.__rchoice__(v)
+
+   [*] only when Py_TYPE(v) != Py_TYPE(w), Py_TYPE(w) is a subclass of
+       Py_TYPE(v), and Py_TYPE(w).__rchoice__ differs from
+       Py_TYPE(v).__rchoice__ (see choice_method_is_overloaded()).
+ */
+
+/* Copy of method_is_overloaded() in Objects/typeobject.c (static there).
+   right.__class__ is a nontrivial subclass of left.__class__. */
+static int
+choice_method_is_overloaded(PyObject *left, PyObject *right, PyObject *name)
+{
+    PyObject *a, *b;
+    int ok;
+
+    if (PyObject_GetOptionalAttr((PyObject *)(Py_TYPE(right)), name, &b) < 0) {
+        return -1;
+    }
+    if (b == NULL) {
+        /* If right doesn't have it, it's not overloaded */
+        return 0;
+    }
+
+    if (PyObject_GetOptionalAttr((PyObject *)(Py_TYPE(left)), name, &a) < 0) {
+        Py_DECREF(b);
+        return -1;
+    }
+    if (a == NULL) {
+        Py_DECREF(b);
+        /* If right has it but left doesn't, it's overloaded */
+        return 1;
+    }
+
+    ok = PyObject_RichCompareBool(a, b, Py_NE);
+    Py_DECREF(a);
+    Py_DECREF(b);
+    return ok;
+}
+
+/* Call type(self).name(self, arg) using special-method lookup (type only,
+   no instance dict).  Like vectorcall_maybe() in Objects/typeobject.c:
+   returns NotImplemented when the method is missing, NULL with an
+   exception set on error. */
+static PyObject *
+choice_call_maybe(PyObject *self, PyObject *name, PyObject *arg)
+{
+    PyObject *res = _PyObject_MaybeCallSpecialOneArg(self, name, arg);
+    if (res == NULL && !PyErr_Occurred()) {
+        Py_RETURN_NOTIMPLEMENTED;
+    }
+    assert(_Py_CheckSlotResult(self, "?", res != NULL));
+    return res;
+}
+
+PyObject *
+PyNumber_Choice(PyObject *v, PyObject *w)
+{
+    PyTypeObject *lt = Py_TYPE(v);
+    PyTypeObject *rt = Py_TYPE(w);
+    PyObject *res;
+    /* The reflected method is a candidate only for distinct types. */
+    int do_other = (lt != rt);
+
+    if (do_other && PyType_IsSubtype(rt, lt)) {
+        int ok = choice_method_is_overloaded(v, w, &_Py_ID(__rchoice__));
+        if (ok < 0) {
+            return NULL;
+        }
+        if (ok) {
+            res = choice_call_maybe(w, &_Py_ID(__rchoice__), v);
+            if (res != Py_NotImplemented) {
+                return res;     /* result, or NULL with an exception set */
+            }
+            Py_DECREF(res);     /* can't do it; do not retry it below */
+            do_other = 0;
+        }
+    }
+
+    res = choice_call_maybe(v, &_Py_ID(__choice__), w);
+    if (res != Py_NotImplemented) {
+        return res;
+    }
+    Py_DECREF(res);
+
+    if (do_other) {
+        res = choice_call_maybe(w, &_Py_ID(__rchoice__), v);
+        if (res != Py_NotImplemented) {
+            return res;
+        }
+        Py_DECREF(res);
+    }
+
+    /* Nobody claimed the operation: build an inert node. */
+    return _PyChoice_New(v, w);
+}
 
 PyObject *
 PyNumber_Power(PyObject *v, PyObject *w, PyObject *z)

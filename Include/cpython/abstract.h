@@ -102,3 +102,14 @@ PyAPI_FUNC(Py_ssize_t) PyObject_LengthHint(PyObject *o, Py_ssize_t);
     (PyList_Check(sf) ? ((PyListObject *)(sf))->ob_item \
                       : ((PyTupleObject *)(sf))->ob_item)
 
+/* === Number Protocol ================================================== */
+
+/* Returns the result of the choice operator, or NULL on failure.
+
+   This is the equivalent of the Python expression: o1 ? o2.
+   Dispatches to type(o1).__choice__ and type(o2).__rchoice__ with the
+   reflected-operand rules of the other binary operators; when neither
+   claims the operation the result is a new types.ChoiceType node.
+   Not part of the limited API. */
+PyAPI_FUNC(PyObject *) PyNumber_Choice(PyObject *o1, PyObject *o2);
+

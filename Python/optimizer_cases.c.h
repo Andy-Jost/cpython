@@ -2287,6 +2287,9 @@
             if (!((lhs_int || lhs_float) && (rhs_int || rhs_float))) {
                 res = sym_new_unknown(ctx);
             }
+            else if (oparg == NB_CHOICE) {
+                res = sym_new_not_null(ctx);
+            }
             else if (oparg == NB_POWER || oparg == NB_INPLACE_POWER) {
                 if (rhs_float) {
                     res = sym_new_unknown(ctx);

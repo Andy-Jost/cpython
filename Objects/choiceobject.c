@@ -116,7 +116,17 @@ choice_getnewargs(PyObject *op, PyObject *Py_UNUSED(ignored))
     return PyTuple_Pack(2, node->lhs, node->rhs);
 }
 
+// Like slice_reduce(): pickle protocols 0 and 1 have no __newobj__ and
+// need an explicit __reduce__ to rebuild a node from its operands.
+static PyObject *
+choice_reduce(PyObject *op, PyObject *Py_UNUSED(ignored))
+{
+    PyChoiceObject *node = _PyChoice_CAST(op);
+    return Py_BuildValue("O(OO)", Py_TYPE(op), node->lhs, node->rhs);
+}
+
 static PyMethodDef choice_methods[] = {
+    {"__reduce__", choice_reduce, METH_NOARGS, NULL},
     {"__getnewargs__", choice_getnewargs, METH_NOARGS, NULL},
     {NULL, NULL}
 };

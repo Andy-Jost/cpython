@@ -873,7 +873,14 @@ class ChoiceTypeTests(unittest.TestCase):
 
     def test_pickle_and_copy(self):
         node = types.ChoiceType(1, types.ChoiceType("a", None))
-        for proto in range(2, pickle.HIGHEST_PROTOCOL + 1):
+        # __reduce__ names the type and the operands, so every protocol
+        # rebuilds a node, including the copyreg-based protocols 0 and 1.
+        cls, args = node.__reduce__()
+        self.assertIs(cls, types.ChoiceType)
+        self.assertEqual(len(args), 2)
+        self.assertEqual(args[0], 1)
+        self.assertIs(args[1], node.rhs)
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.subTest(proto=proto):
                 copied = pickle.loads(pickle.dumps(node, proto))
                 self.assertIs(type(copied), types.ChoiceType)
@@ -881,13 +888,6 @@ class ChoiceTypeTests(unittest.TestCase):
                 self.assertEqual(repr(copied), repr(node))
                 self.assertEqual(copied.lhs, 1)
                 self.assertIs(type(copied.rhs), types.ChoiceType)
-        # Only __getnewargs__ is defined, so the copyreg-based protocols
-        # 0 and 1 cannot pickle a node.
-        msg = "cannot pickle 'ChoiceType' object"
-        for proto in (0, 1):
-            with self.subTest(proto=proto):
-                with self.assertRaisesRegex(TypeError, msg):
-                    pickle.dumps(node, proto)
         shallow = copy.copy(node)
         self.assertIs(type(shallow), types.ChoiceType)
         self.assertIsNot(shallow, node)

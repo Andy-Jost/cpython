@@ -573,6 +573,43 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual(B() ? C(), "B.choice")
         self.assertEqual(log, ["B.__choice__"])
 
+    def test_subclass_right_adds_rchoice_base_lacks_it(self):
+        # Reflected-first also applies when the base type has no
+        # __rchoice__ at all: a method the right operand adds counts as
+        # an overload of a missing one.
+        log = []
+        class B:
+            def __choice__(self, other):
+                log.append("B.__choice__")
+                return "B.choice"
+        class C(B):
+            def __rchoice__(self, other):
+                log.append("C.__rchoice__")
+                return "C.rchoice"
+        self.assertEqual(B() ? C(), "C.rchoice")
+        self.assertEqual(log, ["C.__rchoice__"])
+        log.clear()
+        self.assertEqual(C() ? B(), "B.choice")
+        self.assertEqual(log, ["B.__choice__"])
+
+    def test_subclass_right_overriding_only_choice_not_first(self):
+        # Only an overridden __rchoice__ puts the right operand first;
+        # overriding __choice__ alone does not.
+        log = []
+        class B:
+            def __choice__(self, other):
+                log.append("B.__choice__")
+                return "B.choice"
+            def __rchoice__(self, other):
+                log.append("B.__rchoice__")
+                return "B.rchoice"
+        class C(B):
+            def __choice__(self, other):
+                log.append("C.__choice__")
+                return "C.choice"
+        self.assertEqual(B() ? C(), "B.choice")
+        self.assertEqual(log, ["B.__choice__"])
+
     def test_inherited_classmethod_rchoice_counts_as_overloaded(self):
         # The overload test compares the attributes looked up on the two
         # types with !=. An inherited classmethod binds to the subclass and
@@ -667,6 +704,26 @@ class DispatchTests(unittest.TestCase):
         self.assertIs(node.lhs, left)
         self.assertEqual(node.rhs, 1)
 
+    def test_overload_check_error_propagates(self):
+        # The subclass-on-right test looks __rchoice__ up on both types.
+        # An error raised by that lookup propagates; an AttributeError
+        # means "not overloaded".
+        class Desc:
+            def __init__(self, exc):
+                self.exc = exc
+            def __get__(self, obj, objtype=None):
+                raise self.exc
+        class B:
+            def __choice__(self, other):
+                return "B.choice"
+        class Raises(B):
+            __rchoice__ = Desc(RuntimeError("type-level lookup"))
+        with self.assertRaisesRegex(RuntimeError, "type-level lookup"):
+            B() ? Raises()
+        class Missing(B):
+            __rchoice__ = Desc(AttributeError("missing"))
+        self.assertEqual(B() ? Missing(), "B.choice")
+
     def test_fallback_node_identity(self):
         a, b = object(), object()
         node = a ? b
@@ -685,6 +742,27 @@ class DispatchTests(unittest.TestCase):
         self.assertIs(type(node), types.ChoiceType)
         node = 1 ? a
         self.assertIs(type(node), types.ChoiceType)
+
+    def test_metaclass_dispatch(self):
+        # For a class operand the lookup type is its metaclass.
+        class M(type):
+            def __choice__(cls, other):
+                return ("meta", cls.__name__, other)
+            def __rchoice__(cls, other):
+                return ("rmeta", cls.__name__, other)
+        class A(metaclass=M):
+            pass
+        self.assertEqual(A ? 1, ("meta", "A", 1))
+        self.assertEqual(1 ? A, ("rmeta", "A", 1))
+        # A metaclass __getattr__ is not consulted: special-method lookup
+        # reads the type's MRO dictionaries only.
+        class G(type):
+            def __getattr__(cls, name):
+                return lambda other: "getattr"
+        class B(metaclass=G):
+            pass
+        self.assertIs(type(B ? 1), types.ChoiceType)
+        self.assertIs(type(B() ? 1), types.ChoiceType)
 
     def test_staticmethod_and_classmethod(self):
         class S:

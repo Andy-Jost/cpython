@@ -1252,6 +1252,26 @@ class PycMagicTests(unittest.TestCase):
             with open(cached, "rb") as f:
                 self.assertEqual(f.read()[:4], importlib.util.MAGIC_NUMBER)
 
+    def test_pydoc_importfile_stock_magic(self):
+        import pydoc
+        name = "test_choice_pydoc_stock"
+        self.addCleanup(import_helper.unload, name)
+        with os_helper.temp_dir() as tempdir:
+            source = os.path.join(tempdir, name + ".py")
+            with open(source, "w") as f:
+                f.write("VALUE = 1\n")
+            pyc = py_compile.compile(source,
+                                     cfile=os.path.join(tempdir, name + ".pyc"),
+                                     doraise=True)
+            with open(pyc, "rb") as f:
+                data = f.read()
+            self.assertEqual(pydoc.importfile(pyc).VALUE, 1)
+            import_helper.unload(name)
+            # A pyc written by stock CPython is bytecode too, not source.
+            with open(pyc, "wb") as f:
+                f.write(_bootstrap_external._STOCK_MAGIC_NUMBER + data[4:])
+            self.assertEqual(pydoc.importfile(pyc).VALUE, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

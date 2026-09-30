@@ -473,7 +473,10 @@ def importfile(path):
     """Import a Python source file or compiled file given its path."""
     magic = importlib.util.MAGIC_NUMBER
     with open(path, 'rb') as file:
-        is_bytecode = magic == file.read(len(magic))
+        head = file.read(len(magic))
+    # Choice fork: .pyc files written by stock CPython are bytecode too.
+    is_bytecode = head in (magic,
+                           importlib._bootstrap_external._STOCK_MAGIC_NUMBER)
     filename = os.path.basename(path)
     name, ext = os.path.splitext(filename)
     if is_bytecode:

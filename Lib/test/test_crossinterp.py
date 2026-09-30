@@ -282,6 +282,7 @@ PICKLEABLE = [
     types.NotImplementedType,
     types.GenericAlias,
     types.UnionType,
+    types.ChoiceType,
     types.SimpleNamespace,
     # from BUILTIN_WRAPPERS
     METHOD,

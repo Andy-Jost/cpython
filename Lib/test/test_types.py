@@ -50,7 +50,8 @@ class TypesTests(unittest.TestCase):
 
         all_names = ignored | {
             'AsyncGeneratorType', 'BuiltinFunctionType', 'BuiltinMethodType',
-            'CapsuleType', 'CellType', 'ClassMethodDescriptorType', 'CodeType',
+            'CapsuleType', 'CellType', 'ChoiceType', 'ClassMethodDescriptorType',
+            'CodeType',
             'CoroutineType', 'EllipsisType', 'FrameType', 'FunctionType',
             'GeneratorType', 'GenericAlias', 'GetSetDescriptorType',
             'LambdaType', 'MappingProxyType', 'MemberDescriptorType',

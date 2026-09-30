@@ -65,6 +65,7 @@ except ImportError:
 
     GenericAlias = type(list[int])
     UnionType = type(int | str)
+    ChoiceType = type(0 ? 1)
 
     EllipsisType = type(Ellipsis)
     NoneType = type(None)

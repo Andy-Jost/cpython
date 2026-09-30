@@ -1,6 +1,7 @@
 /* _types module */
 
 #include "Python.h"
+#include "pycore_choiceobject.h"  // _PyChoice_Type
 #include "pycore_descrobject.h"   // _PyMethodWrapper_Type
 #include "pycore_namespace.h"     // _PyNamespace_Type
 #include "pycore_object.h"        // _PyNone_Type, _PyNotImplemented_Type
@@ -23,6 +24,7 @@ _types_exec(PyObject *m)
     EXPORT_STATIC_TYPE("BuiltinMethodType", PyCFunction_Type);
     EXPORT_STATIC_TYPE("CapsuleType", PyCapsule_Type);
     EXPORT_STATIC_TYPE("CellType", PyCell_Type);
+    EXPORT_STATIC_TYPE("ChoiceType", _PyChoice_Type);
     EXPORT_STATIC_TYPE("ClassMethodDescriptorType", PyClassMethodDescr_Type);
     EXPORT_STATIC_TYPE("CodeType", PyCode_Type);
     EXPORT_STATIC_TYPE("CoroutineType", PyCoro_Type);

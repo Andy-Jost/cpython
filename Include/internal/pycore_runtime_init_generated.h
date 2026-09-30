@@ -599,6 +599,7 @@ extern "C" {
     INIT_ID(__call__), \
     INIT_ID(__cantrace__), \
     INIT_ID(__ceil__), \
+    INIT_ID(__choice__), \
     INIT_ID(__class__), \
     INIT_ID(__class_getitem__), \
     INIT_ID(__classcell__), \
@@ -695,6 +696,7 @@ extern "C" {
     INIT_ID(__qualname__), \
     INIT_ID(__radd__), \
     INIT_ID(__rand__), \
+    INIT_ID(__rchoice__), \
     INIT_ID(__rdivmod__), \
     INIT_ID(__reduce__), \
     INIT_ID(__reduce_ex__), \

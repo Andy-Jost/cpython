@@ -601,6 +601,7 @@ _PyStaticObjects_CheckRefcnt(PyInterpreterState *interp) {
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__call__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__cantrace__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__ceil__));
+    _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__choice__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__class__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__class_getitem__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__classcell__));
@@ -697,6 +698,7 @@ _PyStaticObjects_CheckRefcnt(PyInterpreterState *interp) {
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__qualname__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__radd__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rand__));
+    _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rchoice__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__rdivmod__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__reduce__));
     _PyStaticObject_CheckRefcnt((PyObject *)&_Py_ID(__reduce_ex__));
